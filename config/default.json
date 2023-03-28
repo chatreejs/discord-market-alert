@@ -1,10 +1,4 @@
 {
-    "discord": {
-        "webhook": {
-            "id": "1052289991721615420",
-            "token": "D20PszN-orbHHSjw3yFcqn_bUDvGeezCUQPP0fAjKs8DMx40ByT_IYdTSMNmWHsYYNtQ"
-        }
-    },
     "exchange": {
         "SET": {
             "name": "SET Thailand",

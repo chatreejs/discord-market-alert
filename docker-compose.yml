@@ -7,4 +7,5 @@ services:
       dockerfile: Dockerfile
     environment:
       - MARKET=${MARKET}
-  
+      - DISCORD_WEBHOOK_ID=${DISCORD_WEBHOOK_ID}
+      - DISCORD_WEBHOOK_TOKEN=${DISCORD_WEBHOOK_TOKEN}

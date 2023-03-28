@@ -12,11 +12,11 @@ export class Bot {
   private marketScraper: MarketScrapper;
   private logger: Logger;
 
-  constructor(name: string) {
+  constructor(name: string, webhookId: string, webhookToken: string) {
     this.name = name;
     this.webhookClient = new WebhookClient({
-      id: config.get("discord.webhook.id"),
-      token: config.get("discord.webhook.token"),
+      id: webhookId,
+      token: webhookToken,
     });
     this.marketScraper = new MarketScrapper();
     this.logger = getLogger("Bot");

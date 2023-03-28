@@ -2,9 +2,7 @@ import { getLogger } from "log4js";
 import { Bot } from "./bot";
 
 function bootstrap() {
-  const bot = new Bot("Brown God (บอทกาว)");
   const logger = getLogger("bootstrap");
-
   logger.level = "debug";
   logger.info("🤖 Bot is running..");
   logger.info(`--------------------`);
@@ -12,12 +10,25 @@ function bootstrap() {
   logger.info(`Date: ${new Date()}`);
   logger.info(`--------------------`);
 
-  const market = process.env.MARKET;
-  if (!market) {
+  const { MARKET, DISCORD_WEBHOOK_ID, DISCORD_WEBHOOK_TOKEN } = process.env;
+  if (!MARKET) {
     logger.error("No market selected");
-    return;
   }
-  bot.sendMessage(market);
+  if (!DISCORD_WEBHOOK_ID) {
+    logger.error("No discord webhook id");
+  }
+  if (!DISCORD_WEBHOOK_TOKEN) {
+    logger.error("No discord webhook token");
+  }
+  if (!MARKET || !DISCORD_WEBHOOK_ID || !DISCORD_WEBHOOK_TOKEN) {
+    return -1;
+  }
+  const bot = new Bot(
+    "Brown God (บอทกาว)",
+    DISCORD_WEBHOOK_ID,
+    DISCORD_WEBHOOK_TOKEN
+  );
+  bot.sendMessage(MARKET);
 }
 
 bootstrap();
