@@ -12,7 +12,12 @@ function bootstrap() {
   logger.info(`Date: ${new Date()}`);
   logger.info(`--------------------`);
 
-  bot.sendMessage(process.env.MARKET);
+  const market = process.env.MARKET;
+  if (!market) {
+    logger.error("No market selected");
+    return;
+  }
+  bot.sendMessage(market);
 }
 
 bootstrap();
