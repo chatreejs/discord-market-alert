@@ -14,11 +14,11 @@
   "authors": [
     {
       "name": "Chanon Treemeth",
-      "email": "chanon29060@live.com"
+      "email": "chanon.t@chatreejs.com"
     }
   ],
   "scripts": {
-    "build": "rm -rf ./dist/ && tsc",
+    "build": "tsc",
     "start": "npm run build && node dist/main.js",
     "start:dev": "ts-node src/main.ts"
   },

@@ -12,7 +12,9 @@ export class MarketScrapper {
 
   async scrapeSETData(): Promise<SETIndex> {
     this.logger.info("Scraping SET data...");
-    const browser = await puppeteer.launch();
+    const browser = await puppeteer.launch({
+      args: ["--no-sandbox", "--disable-setuid-sandbox"],
+    });
     const page = await browser.newPage();
 
     await page.goto("https://www.settrade.com/th/home");
