@@ -1,10 +1,17 @@
 import puppeteer from "puppeteer";
 import { SETIndex } from "../common/model";
+import { Logger, getLogger } from "log4js";
 
 export class MarketScrapper {
-  constructor() {}
+  private logger: Logger;
+
+  constructor() {
+    this.logger = getLogger("MarketScrapper");
+    this.logger.level = "debug";
+  }
 
   async scrapeSETData(): Promise<SETIndex> {
+    this.logger.info("Scraping SET data...");
     const browser = await puppeteer.launch();
     const page = await browser.newPage();
 
@@ -63,6 +70,7 @@ export class MarketScrapper {
     };
 
     browser.close();
+    this.logger.info("Scraping SET data completed.");
     return data;
   }
 }

@@ -1,21 +1,18 @@
-import config from "config";
-import { CronJob } from "cron";
+import { getLogger } from "log4js";
 import { Bot } from "./bot";
 
 function bootstrap() {
   const bot = new Bot("Brown God (บอทกาว)");
-  const SETIndexJob = new CronJob(
-    config.get("cron.SET"),
-    function () {
-      bot.sendMessage("SET");
-    },
-    null,
-    false,
-    "Asia/Bangkok"
-  );
+  const logger = getLogger("bootstrap");
 
-  SETIndexJob.start();
-  // bot.sendMessage("SET");
+  logger.level = "debug";
+  logger.info("🤖 Bot is running..");
+  logger.info(`--------------------`);
+  logger.info(`Selecting Market: ${process.env.MARKET}`);
+  logger.info(`Date: ${new Date()}`);
+  logger.info(`--------------------`);
+
+  bot.sendMessage(process.env.MARKET);
 }
 
 bootstrap();

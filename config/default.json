@@ -5,10 +5,6 @@
             "token": "D20PszN-orbHHSjw3yFcqn_bUDvGeezCUQPP0fAjKs8DMx40ByT_IYdTSMNmWHsYYNtQ"
         }
     },
-    "cron": {
-        "SET": "0/5 * * * * *",
-        "NASDAQ": "0/5 * * * * *"
-    },
     "exchange": {
         "SET": {
             "name": "SET Thailand",

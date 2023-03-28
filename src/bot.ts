@@ -3,11 +3,14 @@ import { EmbedBuilder, WebhookClient } from "discord.js";
 import { dateTH, monthTH } from "./common/constants";
 import { toBEYear } from "./common/utils";
 import { MarketScrapper } from "./market-scrapper";
+import { Market } from "./common/enums";
+import { Logger, getLogger } from "log4js";
 
 export class Bot {
   private name: string;
   private webhookClient: WebhookClient;
   private marketScraper: MarketScrapper;
+  private logger: Logger;
 
   constructor(name: string) {
     this.name = name;
@@ -16,12 +19,14 @@ export class Bot {
       token: config.get("discord.webhook.token"),
     });
     this.marketScraper = new MarketScrapper();
+    this.logger = getLogger("Bot");
+    this.logger.level = "debug";
   }
 
   async sendMessage(market: string) {
     let embed: EmbedBuilder;
     switch (market) {
-      case "SET":
+      case Market.SET:
         embed = await this.generateSETIndexEmbed();
         break;
       default:
@@ -32,7 +37,7 @@ export class Bot {
       return;
     }
 
-    console.log(`Sending message to Discord...`);
+    this.logger.info(`Sending message to Discord...`);
     this.webhookClient.send({
       username: this.name,
       embeds: [embed],
