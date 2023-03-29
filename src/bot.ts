@@ -1,5 +1,5 @@
 import config from "config";
-import { EmbedBuilder, WebhookClient } from "discord.js";
+import { APIEmbed, EmbedBuilder, WebhookClient } from "discord.js";
 import { dateTH, monthTH } from "./common/constants";
 import { toBEYear } from "./common/utils";
 import { MarketScrapper } from "./market-scrapper";
@@ -24,44 +24,55 @@ export class Bot {
   }
 
   async sendMessage(market: string) {
-    let embed: EmbedBuilder;
+    let embeds: APIEmbed[] = [];
     switch (market) {
       case Market.SET:
-        embed = await this.generateSETIndexEmbed();
+        embeds.push(
+          await this.generateSETIndexEmbed(
+            "รายงายสถานการณ์ตลาดหลักทรัพย์แห่งประเทศไทย"
+          )
+        );
+        break;
+      case Market.SET_SUMMARY:
+        embeds.push(
+          await this.generateSETIndexEmbed(
+            "สรุปภาวะตลาดหลักทรัพย์แห่งประเทศไทย"
+          )
+        );
+        // embeds.push(await this.generateSETMostActiveVolumeEmbed());
         break;
       default:
         break;
     }
 
-    if (!embed) {
+    if (embeds.length == 0) {
       return;
     }
 
     this.logger.info(`Sending message to Discord...`);
     this.webhookClient.send({
       username: this.name,
-      embeds: [embed],
+      embeds,
     });
   }
 
-  async generateSETIndexEmbed(): Promise<EmbedBuilder> {
+  async generateSETIndexEmbed(title: string): Promise<APIEmbed> {
     const data = await this.marketScraper.scrapeSETData();
     const date = new Date();
+    const dataString = `วัน${dateTH[date.getDay()]} ที่ ${date.getDate()} ${
+      monthTH[date.getMonth()]
+    } ${toBEYear(date)}`;
     const embed = new EmbedBuilder()
-      .setTitle(
-        `สรุปภาวะตลาดประจำวัน${dateTH[date.getDay()]} ที่ ${date.getDate()} ${
-          monthTH[date.getMonth()]
-        } ${toBEYear(date)}`
-      )
-      .setDescription(
-        `
-      SET Index: ${data.index}
-      เปลี่ยนแปลง: ${data.change}
-      `
-      )
+      .setTitle(title)
+      .setDescription(`SET Index\n${data.index}`)
       .setURL("https://www.set.or.th/th/home")
       .setColor(0xfbb034)
       .addFields([
+        {
+          name: "เปลี่ยนแปลง",
+          value: data.change,
+          inline: true,
+        },
         {
           name: "สูงสุด",
           value: data.max,
@@ -82,13 +93,25 @@ export class Bot {
           value: data.value,
           inline: true,
         },
+        {
+          name: "🕒 ข้อมูลล่าสุด",
+          value: `> ${dataString} ${date.toLocaleTimeString()}`,
+          inline: false,
+        },
       ])
+      .setFooter({
+        text: "ข้อมูลจาก settrade.com\nบอทโดย Chatree.js",
+      })
       .setAuthor({
         name: config.get("exchange.SET.name"),
         url: config.get("exchange.SET.url"),
         iconURL: config.get("exchange.SET.iconUrl"),
       });
 
-    return embed;
+    return embed.toJSON();
+  }
+
+  async generateSETMostActiveVolumeEmbed(): Promise<APIEmbed> {
+    throw new Error("Not implemented");
   }
 }
