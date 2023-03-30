@@ -29,7 +29,7 @@ export class Bot {
       case Market.SET:
         embeds.push(
           await this.generateSETIndexEmbed(
-            "รายงายสถานการณ์ตลาดหลักทรัพย์แห่งประเทศไทย"
+            "รายงานสถานการณ์ตลาดหลักทรัพย์แห่งประเทศไทย"
           )
         );
         break;
@@ -64,48 +64,40 @@ export class Bot {
     } ${toBEYear(date)}`;
     const embed = new EmbedBuilder()
       .setTitle(title)
-      .setDescription(`SET Index\n${data.index}`)
+      .setDescription(`SET Index\n \`\`\`\n${data.index}\n\`\`\``)
       .setURL("https://www.set.or.th/th/home")
       .setColor(0xfbb034)
       .addFields([
         {
-          name: "เปลี่ยนแปลง",
-          value: data.change,
+          name: ":chart_with_upwards_trend: เปลี่ยนแปลง",
+          value: `${data.change} ${data.percentChange}`,
           inline: true,
         },
         {
-          name: "สูงสุด",
+          name: ":green_square: สูงสุด",
           value: data.max,
           inline: true,
         },
         {
-          name: "ต่ำสุด",
+          name: ":red_square: ต่ำสุด",
           value: data.min,
           inline: true,
         },
         {
-          name: "ปริมาณ ('000 หุ้น)",
+          name: ":coin: ปริมาณ ('000 หุ้น)",
           value: data.volume,
           inline: true,
         },
         {
-          name: "มูลค่า (ล้านบาท)",
+          name: ":dollar: มูลค่า (ล้านบาท)",
           value: data.value,
           inline: true,
         },
-        {
-          name: "🕒 ข้อมูลล่าสุด",
-          value: `> ${dataString} ${date.toLocaleTimeString()}`,
-          inline: false,
-        },
       ])
+      .setThumbnail(config.get("exchange.SET.iconUrl"))
+      .setImage(config.get("exchange.SET.bannerUrl"))
       .setFooter({
-        text: "ข้อมูลจาก settrade.com\nบอทโดย Chatree.js",
-      })
-      .setAuthor({
-        name: config.get("exchange.SET.name"),
-        url: config.get("exchange.SET.url"),
-        iconURL: config.get("exchange.SET.iconUrl"),
+        text: `ข้อมูลเมื่อ ${dataString} ${date.toLocaleTimeString()}\nข้อมูลจาก settrade.com\nบอทโดย Chatree.js`,
       });
 
     return embed.toJSON();
