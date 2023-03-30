@@ -3,7 +3,8 @@
         "SET": {
             "name": "SET Thailand",
             "url": "https://www.set.or.th/th/home",
-            "iconUrl": "https://is1-ssl.mzstatic.com/image/thumb/Purple112/v4/74/c1/9a/74c19acb-a791-53d5-a9c3-96fd846339ea/AppIcon-0-0-1x_U007emarketing-0-0-0-7-0-0-sRGB-0-0-0-GLES2_U002c0-512MB-85-220-0-0.png/512x512bb.jpg"
+            "iconUrl": "https://is1-ssl.mzstatic.com/image/thumb/Purple112/v4/74/c1/9a/74c19acb-a791-53d5-a9c3-96fd846339ea/AppIcon-0-0-1x_U007emarketing-0-0-0-7-0-0-sRGB-0-0-0-GLES2_U002c0-512MB-85-220-0-0.png/512x512bb.jpg",
+            "bannerUrl": "https://media.set.or.th/set/Images/2021/Nov/set_homepage.jpg"
         }
     }
 }

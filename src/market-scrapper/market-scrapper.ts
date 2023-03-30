@@ -16,31 +16,36 @@ export class MarketScrapper {
       args: ["--no-sandbox", "--disable-setuid-sandbox"],
     });
     const page = await browser.newPage();
+    const url = "https://www.settrade.com/th/home";
+    this.logger.info(`Scraping data from ${url}`);
+    await page.goto(url);
 
-    await page.goto("https://www.settrade.com/th/home");
-
-    let indexElement = await page.waitForSelector(
-      "#index-set-stock-detail-tab-pane-1 > div > div.d-flex.flex-wrap > div.d-flex.flex-column.col-12.col-md-6.pe-md-3 > div.card-market-index > div.card.card-index.border-0.pt-1.pb-3.shadow-none.theme-success-1 > div > div > div.d-flex.flex-column > div.d-flex.align-items-center.text-nowrap.mb-2.market-last > h2"
+    let indexElement = await page.waitForXPath(
+      '//*[@id="index-set-stock-detail-tab-pane-1"]/div/div[1]/div[1]/div[1]/div[2]/div/div/div[2]/div[1]/h2'
     );
 
-    let changeElement = await page.waitForSelector(
-      "#index-set-stock-detail-tab-pane-1 > div > div.d-flex.flex-wrap > div.d-flex.flex-column.col-12.col-md-6.pe-md-3 > div.card-market-index > div.card.card-index.border-0.pt-1.pb-3.shadow-none.theme-success-1 > div > div > div.d-flex.flex-column > div.market-change.title-font-family.lh-1.d-flex.justify-content-center.text-nowrap.fs-24px.px-2.theme-success > span.me-1"
+    let changeElement = await page.waitForXPath(
+      '//*[@id="index-set-stock-detail-tab-pane-1"]/div/div[1]/div[1]/div[1]/div[2]/div/div/div[2]/div[2]/span[1]'
     );
 
-    let maxElement = await page.waitForSelector(
-      "#index-set-stock-detail-tab-pane-1 > div > div.d-flex.flex-wrap > div.d-flex.flex-column.col-12.col-md-6.pe-md-3 > div.market-summary-index-items.d-flex.flex-wrap > div.d-flex.flex-column.col-5.me-auto > div.d-flex.flex-column.border-bottom.py-3 > span"
+    let percentChangeElement = await page.waitForXPath(
+      '//*[@id="index-set-stock-detail-tab-pane-1"]/div/div[1]/div[1]/div[1]/div[2]/div/div/div[2]/div[2]/span[2]'
     );
 
-    let minElement = await page.waitForSelector(
-      "#index-set-stock-detail-tab-pane-1 > div > div.d-flex.flex-wrap > div.d-flex.flex-column.col-12.col-md-6.pe-md-3 > div.market-summary-index-items.d-flex.flex-wrap > div:nth-child(2) > div.d-flex.flex-column.border-bottom.py-3 > span"
+    let maxElement = await page.waitForXPath(
+      '//*[@id="index-set-stock-detail-tab-pane-1"]/div/div[1]/div[1]/div[2]/div[1]/div[1]/span'
     );
 
-    let volumeElement = await page.waitForSelector(
-      "#index-set-stock-detail-tab-pane-1 > div > div.d-flex.flex-wrap > div.d-flex.flex-column.col-12.col-md-6.pe-md-3 > div.market-summary-index-items.d-flex.flex-wrap > div.d-flex.flex-column.col-5.me-auto > div:nth-child(2) > span"
+    let minElement = await page.waitForXPath(
+      '//*[@id="index-set-stock-detail-tab-pane-1"]/div/div[1]/div[1]/div[2]/div[2]/div[1]/span'
     );
 
-    let valueElement = await page.waitForSelector(
-      "#index-set-stock-detail-tab-pane-1 > div > div.d-flex.flex-wrap > div.d-flex.flex-column.col-12.col-md-6.pe-md-3 > div.market-summary-index-items.d-flex.flex-wrap > div:nth-child(2) > div:nth-child(2) > span"
+    let volumeElement = await page.waitForXPath(
+      '//*[@id="index-set-stock-detail-tab-pane-1"]/div/div[1]/div[1]/div[2]/div[1]/div[2]/span'
+    );
+
+    let valueElement = await page.waitForXPath(
+      '//*[@id="index-set-stock-detail-tab-pane-1"]/div/div[1]/div[1]/div[2]/div[2]/div[2]/span'
     );
 
     let index = await page.evaluate(
@@ -50,6 +55,10 @@ export class MarketScrapper {
     let change = await page.evaluate(
       (element) => element.textContent,
       changeElement
+    );
+    let percentChange = await page.evaluate(
+      (element) => element.textContent,
+      percentChangeElement
     );
     let max = await page.evaluate((element) => element.textContent, maxElement);
     let min = await page.evaluate((element) => element.textContent, minElement);
@@ -65,6 +74,7 @@ export class MarketScrapper {
     let data: SETIndex = {
       index: index.trim(),
       change: change.trim(),
+      percentChange: percentChange.trim(),
       max: max.trim(),
       min: min.trim(),
       volume: volume.trim(),
