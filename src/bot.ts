@@ -65,7 +65,7 @@ export class Bot {
     const embed = new EmbedBuilder()
       .setTitle(title)
       .setDescription(`SET Index\n \`\`\`\n${data.index}\n\`\`\``)
-      .setURL("https://www.set.or.th/th/home")
+      .setURL(config.get("exchange.SET.url"))
       .setColor(0xfbb034)
       .addFields([
         {
