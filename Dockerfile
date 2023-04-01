@@ -11,6 +11,7 @@ FROM node:16.19.0-alpine AS production
 WORKDIR /app
 
 RUN apk add --no-cache \
+    tzdata \
     chromium \
     nss \
     freetype \
@@ -20,6 +21,7 @@ RUN apk add --no-cache \
     nodejs \
     yarn
 
+ENV TZ=Asia/Bangkok
 ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser
 
 COPY package.json ./
