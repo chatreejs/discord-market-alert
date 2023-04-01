@@ -59,7 +59,7 @@ export class Bot {
   async generateSETIndexEmbed(title: string): Promise<APIEmbed> {
     const data = await this.marketScraper.scrapeSETData();
     const date = new Date();
-    const dataString = `วัน${dateTH[date.getDay()]} ที่ ${date.getDate()} ${
+    const dateString = `วัน${dateTH[date.getDay()]} ที่ ${date.getDate()} ${
       monthTH[date.getMonth()]
     } ${toBEYear(date)}`;
     const embed = new EmbedBuilder()
@@ -97,7 +97,7 @@ export class Bot {
       .setThumbnail(config.get("exchange.SET.iconUrl"))
       .setImage(config.get("exchange.SET.bannerUrl"))
       .setFooter({
-        text: `ข้อมูลเมื่อ ${dataString} ${date.toLocaleTimeString()}\nข้อมูลจาก settrade.com\nบอทโดย Chatree.js`,
+        text: `ข้อมูลเมื่อ ${dateString} ${date.toLocaleTimeString()}\nข้อมูลจาก settrade.com\nบอทโดย Chatree.js`,
       });
 
     return embed.toJSON();
