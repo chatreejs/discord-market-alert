@@ -1,0 +1,4 @@
+export enum AlertType {
+  MARKET_OPEN = "MARKET_OPEN",
+  MARKET_SUMMARY = "MARKET_SUMMARY",
+}

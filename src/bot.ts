@@ -3,7 +3,7 @@ import { APIEmbed, EmbedBuilder, WebhookClient } from "discord.js";
 import { dateTH, monthTH } from "./common/constants";
 import { toBEYear } from "./common/utils";
 import { MarketScrapper } from "./market-scrapper";
-import { Market } from "./common/enums";
+import { AlertType, Market } from "./common/enums";
 import { Logger, getLogger } from "log4js";
 
 export class Bot {
@@ -23,23 +23,24 @@ export class Bot {
     this.logger.level = "debug";
   }
 
-  async sendMessage(market: string) {
+  async sendMessage(market: string, alertType: string) {
     let embeds: APIEmbed[] = [];
     switch (market) {
       case Market.SET:
-        embeds.push(
-          await this.generateSETIndexEmbed(
-            "รายงานสถานการณ์ตลาดหลักทรัพย์แห่งประเทศไทย"
-          )
-        );
-        break;
-      case Market.SET_SUMMARY:
-        embeds.push(
-          await this.generateSETIndexEmbed(
-            "สรุปภาวะตลาดหลักทรัพย์แห่งประเทศไทย"
-          )
-        );
-        // embeds.push(await this.generateSETMostActiveVolumeEmbed());
+        if (alertType === AlertType.MARKET_OPEN) {
+          embeds.push(
+            await this.generateSETIndexEmbed(
+              "รายงานสถานการณ์ตลาดหลักทรัพย์แห่งประเทศไทย"
+            )
+          );
+        } else if (alertType === AlertType.MARKET_SUMMARY) {
+          embeds.push(
+            await this.generateSETIndexEmbed(
+              "สรุปภาวะตลาดหลักทรัพย์แห่งประเทศไทย"
+            )
+          );
+          // embeds.push(await this.generateSETMostActiveVolumeEmbed());
+        }
         break;
       default:
         break;
@@ -54,6 +55,7 @@ export class Bot {
       username: this.name,
       embeds,
     });
+    process.exit(0);
   }
 
   async generateSETIndexEmbed(title: string): Promise<APIEmbed> {
