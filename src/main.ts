@@ -3,13 +3,15 @@ import { Bot } from "./bot";
 import { Configuration, loadConfiguration } from "./config";
 import { HolidayValidator } from "./holiday-validator/holiday-validator";
 import { logBar } from "./common/constants";
+var pjson = require("./package.json");
 
 function bootstrap() {
   const logger = getLogger("bootstrap");
 
   const today = new Date();
   logger.level = "debug";
-  logger.info("🤖 Bot is running..");
+  logger.info("Discord Market Alert Bot 🤖");
+  logger.info(`Version: ${pjson.version}`);
   logger.debug("Loading configuration...");
 
   let config: Configuration;
