@@ -24,7 +24,7 @@ export class Bot {
     this.logger.level = configuration.logLevel;
   }
 
-  async sendMessage(market: string, alertType: string) {
+  async sendMessage(market: string, alertType: string): Promise<void> {
     let embeds: APIEmbed[] = [];
     switch (market) {
       case Market.SET:
@@ -56,7 +56,6 @@ export class Bot {
       username: this.name,
       embeds,
     });
-    process.exit(0);
   }
 
   async generateSETIndexEmbed(title: string): Promise<APIEmbed> {
