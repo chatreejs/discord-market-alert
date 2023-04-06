@@ -1,23 +1,23 @@
 import puppeteer from "puppeteer";
 import { SETIndex } from "../common/model";
 import { Logger, getLogger } from "log4js";
+import { configuration } from "../config";
 
 export class MarketScrapper {
   private logger: Logger;
 
   constructor() {
     this.logger = getLogger("MarketScrapper");
-    this.logger.level = "debug";
+    this.logger.level = configuration.logLevel;
   }
 
   async scrapeSETData(): Promise<SETIndex> {
-    this.logger.info("Scraping SET data...");
     const browser = await puppeteer.launch({
       args: ["--no-sandbox", "--disable-setuid-sandbox"],
     });
     const page = await browser.newPage();
     const url = "https://www.settrade.com/th/home";
-    this.logger.info(`Scraping data from ${url}`);
+    this.logger.debug(`Scraping SET data from ${url}`);
     await page.goto(url);
 
     let indexElement = await page.waitForXPath(
@@ -82,7 +82,7 @@ export class MarketScrapper {
     };
 
     browser.close();
-    this.logger.info("Scraping SET data completed.");
+    this.logger.debug("Scraping SET data completed.");
     return data;
   }
 }

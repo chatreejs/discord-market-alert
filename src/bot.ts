@@ -5,6 +5,7 @@ import { toBEYear } from "./common/utils";
 import { MarketScrapper } from "./market-scrapper";
 import { AlertType, Market } from "./common/enums";
 import { Logger, getLogger } from "log4js";
+import { configuration } from "./config";
 
 export class Bot {
   private name: string;
@@ -20,7 +21,7 @@ export class Bot {
     });
     this.marketScraper = new MarketScrapper();
     this.logger = getLogger("Bot");
-    this.logger.level = "debug";
+    this.logger.level = configuration.logLevel;
   }
 
   async sendMessage(market: string, alertType: string) {
@@ -59,11 +60,13 @@ export class Bot {
   }
 
   async generateSETIndexEmbed(title: string): Promise<APIEmbed> {
+    this.logger.debug("Retrieving SET Index data...");
     const data = await this.marketScraper.scrapeSETData();
     const date = new Date();
     const dateString = `วัน${dateTH[date.getDay()]} ที่ ${date.getDate()} ${
       monthTH[date.getMonth()]
     } ${toBEYear(date)}`;
+    this.logger.debug("Generating SET Index embed...");
     const embed = new EmbedBuilder()
       .setTitle(title)
       .setDescription(`SET Index\n \`\`\`\n${data.index}\n\`\`\``)

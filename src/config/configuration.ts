@@ -1,4 +1,3 @@
-import { getLogger } from "log4js";
 import { AlertType, Market } from "../common/enums";
 
 export interface Configuration {
@@ -6,7 +5,16 @@ export interface Configuration {
   alertType: string;
   discordWebhookId: string;
   discordWebhookToken: string;
+  logLevel?: string;
 }
+
+export const configuration: Configuration = {
+  market: process.env.MARKET,
+  alertType: process.env.ALERT_TYPE,
+  discordWebhookId: process.env.DISCORD_WEBHOOK_ID,
+  discordWebhookToken: process.env.DISCORD_WEBHOOK_TOKEN,
+  logLevel: process.env.LOG_LEVEL || "info",
+};
 
 export function loadConfiguration(): Configuration {
   const requiredEnvVars = [
@@ -22,12 +30,7 @@ export function loadConfiguration(): Configuration {
     );
   }
 
-  const config: Configuration = {
-    market: process.env.MARKET,
-    alertType: process.env.ALERT_TYPE,
-    discordWebhookId: process.env.DISCORD_WEBHOOK_ID,
-    discordWebhookToken: process.env.DISCORD_WEBHOOK_TOKEN,
-  };
+  const config = configuration;
   const errors = validateConfiguration(config);
   if (errors.length > 0) {
     throw new Error(`Invalid configuration: ${errors.join(", ")}`);
