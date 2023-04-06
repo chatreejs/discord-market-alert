@@ -3,8 +3,9 @@ import { APIEmbed, EmbedBuilder, WebhookClient } from "discord.js";
 import { dateTH, monthTH } from "./common/constants";
 import { toBEYear } from "./common/utils";
 import { MarketScrapper } from "./market-scrapper";
-import { Market } from "./common/enums";
+import { AlertType, Market } from "./common/enums";
 import { Logger, getLogger } from "log4js";
+import { configuration } from "./config";
 
 export class Bot {
   private name: string;
@@ -20,26 +21,27 @@ export class Bot {
     });
     this.marketScraper = new MarketScrapper();
     this.logger = getLogger("Bot");
-    this.logger.level = "debug";
+    this.logger.level = configuration.logLevel;
   }
 
-  async sendMessage(market: string) {
+  async sendMessage(market: string, alertType: string): Promise<void> {
     let embeds: APIEmbed[] = [];
     switch (market) {
       case Market.SET:
-        embeds.push(
-          await this.generateSETIndexEmbed(
-            "รายงานสถานการณ์ตลาดหลักทรัพย์แห่งประเทศไทย"
-          )
-        );
-        break;
-      case Market.SET_SUMMARY:
-        embeds.push(
-          await this.generateSETIndexEmbed(
-            "สรุปภาวะตลาดหลักทรัพย์แห่งประเทศไทย"
-          )
-        );
-        // embeds.push(await this.generateSETMostActiveVolumeEmbed());
+        if (alertType === AlertType.MARKET_OPEN) {
+          embeds.push(
+            await this.generateSETIndexEmbed(
+              "รายงานสถานการณ์ตลาดหลักทรัพย์แห่งประเทศไทย"
+            )
+          );
+        } else if (alertType === AlertType.MARKET_SUMMARY) {
+          embeds.push(
+            await this.generateSETIndexEmbed(
+              "สรุปภาวะตลาดหลักทรัพย์แห่งประเทศไทย"
+            )
+          );
+          // embeds.push(await this.generateSETMostActiveVolumeEmbed());
+        }
         break;
       default:
         break;
@@ -57,11 +59,13 @@ export class Bot {
   }
 
   async generateSETIndexEmbed(title: string): Promise<APIEmbed> {
+    this.logger.debug("Retrieving SET Index data...");
     const data = await this.marketScraper.scrapeSETData();
     const date = new Date();
     const dateString = `วัน${dateTH[date.getDay()]} ที่ ${date.getDate()} ${
       monthTH[date.getMonth()]
     } ${toBEYear(date)}`;
+    this.logger.debug("Generating SET Index embed...");
     const embed = new EmbedBuilder()
       .setTitle(title)
       .setDescription(`SET Index\n \`\`\`\n${data.index}\n\`\`\``)

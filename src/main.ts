@@ -1,34 +1,55 @@
 import { getLogger } from "log4js";
 import { Bot } from "./bot";
+import { Configuration, loadConfiguration } from "./config";
+import { HolidayValidator } from "./holiday-validator/holiday-validator";
+import { logBar } from "./common/constants";
+var pjson = require("./package.json");
 
 function bootstrap() {
   const logger = getLogger("bootstrap");
-  logger.level = "debug";
-  logger.info("🤖 Bot is running..");
-  logger.info(`--------------------`);
-  logger.info(`Selecting Market: ${process.env.MARKET}`);
-  logger.info(`Date: ${new Date()}`);
-  logger.info(`--------------------`);
 
-  const { MARKET, DISCORD_WEBHOOK_ID, DISCORD_WEBHOOK_TOKEN } = process.env;
-  if (!MARKET) {
-    logger.error("No market selected");
+  const today = new Date();
+  logger.level = "debug";
+  logger.info("Discord Market Alert Bot 🤖");
+  logger.info(`Version: ${pjson.version}`);
+  logger.debug("Loading configuration...");
+
+  let config: Configuration;
+  try {
+    config = loadConfiguration();
+  } catch (error) {
+    logger.error(error.message);
+    process.exit(1);
   }
-  if (!DISCORD_WEBHOOK_ID) {
-    logger.error("No discord webhook id");
-  }
-  if (!DISCORD_WEBHOOK_TOKEN) {
-    logger.error("No discord webhook token");
-  }
-  if (!MARKET || !DISCORD_WEBHOOK_ID || !DISCORD_WEBHOOK_TOKEN) {
-    return -1;
-  }
-  const bot = new Bot(
-    "Brown God (บอทกาว)",
-    DISCORD_WEBHOOK_ID,
-    DISCORD_WEBHOOK_TOKEN
-  );
-  bot.sendMessage(MARKET);
+
+  logger.info(logBar);
+  logger.debug("Configuration:");
+  logger.debug("Market: " + config.market);
+  logger.debug("Alert Type: " + config.alertType);
+  logger.debug("Discord Webhook ID: " + config.discordWebhookId);
+  logger.debug("Discord Webhook Token: " + config.discordWebhookToken);
+
+  logger.info(logBar);
+  logger.info(`Selecting Market: ${process.env.MARKET}`);
+  logger.info(`Selecting Alert Type: ${process.env.ALERT_TYPE}`);
+  logger.info(`Date: ${today}`);
+  logger.info(logBar);
+
+  const holidayValidator = new HolidayValidator(today, config.market);
+  holidayValidator.checkHoliday().then((isHoliday) => {
+    if (isHoliday) {
+      logger.info("Today is holiday. Exiting...");
+      process.exit(0);
+    } else {
+      logger.info("Today is not holiday. Sending alert...");
+      const bot = new Bot(
+        "Brown God (บอทกาว)",
+        config.discordWebhookId,
+        config.discordWebhookToken
+      );
+      bot.sendMessage(config.market, config.alertType);
+    }
+  });
 }
 
 bootstrap();

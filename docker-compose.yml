@@ -7,5 +7,7 @@ services:
       dockerfile: Dockerfile
     environment:
       - MARKET=${MARKET}
+      - ALERT_TYPE=${ALERT_TYPE}
       - DISCORD_WEBHOOK_ID=${DISCORD_WEBHOOK_ID}
       - DISCORD_WEBHOOK_TOKEN=${DISCORD_WEBHOOK_TOKEN}
+      - TZ=Asia/Bangkok
