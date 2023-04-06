@@ -21,7 +21,6 @@ RUN apk add --no-cache \
     nodejs \
     yarn
 
-ENV TZ=Asia/Bangkok
 ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser
 
 COPY package.json ./

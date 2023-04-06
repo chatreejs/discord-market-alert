@@ -32,6 +32,22 @@ function bootstrap() {
   logger.info(`Selecting Alert Type: ${process.env.ALERT_TYPE}`);
   logger.info(`Date: ${today}`);
   logger.info(logBar);
+
+  const holidayValidator = new HolidayValidator(today, config.market);
+  holidayValidator.checkHoliday().then((isHoliday) => {
+    if (isHoliday) {
+      logger.info("Today is holiday. Exiting...");
+      process.exit(0);
+    } else {
+      logger.info("Today is not holiday. Sending alert...");
+      const bot = new Bot(
+        "Brown God (บอทกาว)",
+        config.discordWebhookId,
+        config.discordWebhookToken
+      );
+      bot.sendMessage(config.market, config.alertType);
+    }
+  });
 }
 
 bootstrap();
