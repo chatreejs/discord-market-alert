@@ -64,7 +64,7 @@ function bootstrap() {
           config.discordWebhookToken
         );
         bot.sendMessage(config.market, config.alertType).then(() => {
-          logger.info("Alert sent. Exiting...");
+          logger.info("Exiting...");
         });
       }
     });

@@ -22,11 +22,10 @@ export class HolidayValidator {
       case Market.SET:
         this.logger.info("Checking Thai holiday...");
         const thaiHolidayDates = await this.scrapeThaiHolidayData();
-        if (this.isThaiHoliday(thaiHolidayDates)) {
-          return true;
-        } else {
-          return false;
-        }
+        return this.isThaiHoliday(thaiHolidayDates);
+      case Market.NASDAQ:
+        this.logger.info("Checking US holiday...");
+        return this.isUSHoliday();
       default:
         return false;
     }
@@ -38,6 +37,14 @@ export class HolidayValidator {
       return true;
     }
     return holidayDates.includes(now.format("YYYY-MM-DD"));
+  }
+
+  private isUSHoliday(): boolean {
+    const now = moment().tz("America/New_York");
+    if (now.day() === 0 || now.day() === 6) {
+      return true;
+    }
+    return false;
   }
 
   private async scrapeThaiHolidayData(): Promise<string[]> {
