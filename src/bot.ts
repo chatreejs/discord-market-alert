@@ -20,7 +20,7 @@ export class Bot {
       token: webhookToken,
     });
     this.marketScraper = new MarketScrapper();
-    this.logger = getLogger("Bot");
+    this.logger = getLogger("[Bot]");
     this.logger.level = configuration.logLevel;
   }
 
@@ -43,11 +43,27 @@ export class Bot {
           // embeds.push(await this.generateSETMostActiveVolumeEmbed());
         }
         break;
+      case Market.NASDAQ:
+        if (alertType === AlertType.MARKET_OPEN) {
+          embeds.push(
+            await this.generateNASDAQIndexEmbed(
+              "รายงานสถานการณ์ NASDAQ Composite Index"
+            )
+          );
+        } else if (alertType === AlertType.MARKET_SUMMARY) {
+          embeds.push(
+            await this.generateNASDAQIndexEmbed(
+              "สรุปภาวะ NASDAQ Composite Index"
+            )
+          );
+        }
+        break;
       default:
         break;
     }
 
     if (embeds.length == 0) {
+      this.logger.info("No embeds to send.");
       return;
     }
 
@@ -109,5 +125,46 @@ export class Bot {
 
   async generateSETMostActiveVolumeEmbed(): Promise<APIEmbed> {
     throw new Error("Not implemented");
+  }
+
+  async generateNASDAQIndexEmbed(title: string): Promise<APIEmbed> {
+    this.logger.debug("Retrieving NASDAQ Index data...");
+    const data = await this.marketScraper.scrapeNASDAQData();
+    const date = new Date();
+    const dateString = `วัน${dateTH[date.getDay()]} ที่ ${date.getDate()} ${
+      monthTH[date.getMonth()]
+    } ${toBEYear(date)}`;
+    this.logger.debug("Generating NASDAQ Index embed...");
+    const embed = new EmbedBuilder()
+      .setTitle(title)
+      .setDescription(
+        `NASDAQ Composite Index (COMP)\n \`\`\`\n${data.index}\n\`\`\``
+      )
+      .setURL(config.get("exchange.NASDAQ.url"))
+      .setColor(0x0679a1)
+      .addFields([
+        {
+          name: ":chart_with_upwards_trend: เปลี่ยนแปลง",
+          value: `${data.change} ${data.percentChange}`,
+          inline: true,
+        },
+        {
+          name: ":green_square: สูงสุด",
+          value: data.max,
+          inline: true,
+        },
+        {
+          name: ":red_square: ต่ำสุด",
+          value: data.min,
+          inline: true,
+        },
+      ])
+      .setThumbnail(config.get("exchange.NASDAQ.iconUrl"))
+      .setImage(config.get("exchange.NASDAQ.bannerUrl"))
+      .setFooter({
+        text: `ข้อมูลเมื่อ ${dateString} ${date.toLocaleTimeString()}\nข้อมูลจาก nasdaq.com\nบอทโดย Chatree.js`,
+      });
+
+    return embed.toJSON();
   }
 }
