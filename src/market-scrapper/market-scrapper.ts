@@ -7,7 +7,7 @@ export class MarketScrapper {
   private logger: Logger;
 
   constructor() {
-    this.logger = getLogger("MarketScrapper");
+    this.logger = getLogger("[MarketScrapper]");
     this.logger.level = configuration.logLevel;
   }
 

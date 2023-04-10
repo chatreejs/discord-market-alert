@@ -13,7 +13,7 @@ export class HolidayValidator {
   constructor(date, market) {
     this.date = date;
     this.market = market;
-    this.logger = getLogger("HolidayValidator");
+    this.logger = getLogger("[HolidayValidator]");
     this.logger.level = configuration.logLevel;
   }
 

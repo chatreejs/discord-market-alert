@@ -20,7 +20,7 @@ export class Bot {
       token: webhookToken,
     });
     this.marketScraper = new MarketScrapper();
-    this.logger = getLogger("Bot");
+    this.logger = getLogger("[Bot]");
     this.logger.level = configuration.logLevel;
   }
 

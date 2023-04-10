@@ -1,5 +1,6 @@
 dist/
 node_modules/
+logs/
 .tool-versions
 .DS_Store
 .env
