@@ -1,10 +1,10 @@
 import { configure, getLogger, shutdown } from "log4js";
 import { Bot } from "./bot";
-import { Configuration, loadConfiguration } from "./config";
-import { HolidayValidator } from "./holiday-validator/holiday-validator";
 import { logBar } from "./common/constants";
+import { Configuration, loadConfiguration } from "./config";
+import { TradingDayValidator } from "./trading-day-validator/trading-day-validator";
 
-const version = require("./package.json").version;
+const { version } = require("../package.json");
 
 function configLogger() {
   const today = new Date();
@@ -51,21 +51,29 @@ function bootstrap() {
     logger.info(`Date: ${today}`);
     logger.info(logBar);
 
-    const holidayValidator = new HolidayValidator(today, config.market);
-    holidayValidator.checkHoliday().then((isHoliday) => {
-      if (isHoliday) {
-        logger.info("Today is holiday. Exiting...");
+    const tradingDayValidator = new TradingDayValidator(today, config.market);
+    tradingDayValidator.checkTradingDay().then((isTradingDay) => {
+      if (!isTradingDay) {
+        logger.info("Today is not trading day. Exiting...");
         process.exit(0);
       } else {
-        logger.info("Today is not holiday. Sending alert...");
+        logger.info("Today is trading day. Sending alert...");
         const bot = new Bot(
           "Brown God (บอทกาว)",
           config.discordWebhookId,
           config.discordWebhookToken
         );
-        bot.sendMessage(config.market, config.alertType).then(() => {
-          logger.info("Exiting...");
-        });
+        bot.sendMessage(config.market, config.alertType).then(
+          () => {
+            logger.info("Exiting...");
+          },
+          (error) => {
+            logger.info("Exiting...");
+            shutdown(() => {
+              process.exit(1);
+            });
+          }
+        );
       }
     });
   } catch (error) {

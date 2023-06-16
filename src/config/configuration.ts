@@ -3,6 +3,7 @@ import { AlertType, Market } from "../common/enums";
 export interface Configuration {
   market: string;
   alertType: string;
+  botClientId: string;
   discordWebhookId: string;
   discordWebhookToken: string;
   logLevel?: string;
@@ -10,6 +11,7 @@ export interface Configuration {
 
 export const configuration: Configuration = {
   market: process.env.MARKET,
+  botClientId: process.env.BOT_CLIENT_ID,
   alertType: process.env.ALERT_TYPE,
   discordWebhookId: process.env.DISCORD_WEBHOOK_ID,
   discordWebhookToken: process.env.DISCORD_WEBHOOK_TOKEN,
@@ -20,6 +22,7 @@ export function loadConfiguration(): Configuration {
   const requiredEnvVars = [
     "MARKET",
     "ALERT_TYPE",
+    "BOT_CLIENT_ID",
     "DISCORD_WEBHOOK_ID",
     "DISCORD_WEBHOOK_TOKEN",
   ];
