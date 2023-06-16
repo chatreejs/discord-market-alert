@@ -1,11 +1,12 @@
 import config from "config";
 import { APIEmbed, EmbedBuilder, WebhookClient } from "discord.js";
-import { dateTH, monthTH } from "./common/constants";
-import { toBEYear } from "./common/utils";
-import { MarketScrapper } from "./market-scrapper";
-import { AlertType, Market } from "./common/enums";
 import { Logger, getLogger } from "log4js";
+import { dateTH, monthTH } from "./common/constants";
+import { AlertType, Market } from "./common/enums";
+import { NASDAQIndex } from "./common/model";
+import { toBEYear } from "./common/utils";
 import { configuration } from "./config";
+import { MarketScrapper } from "./market-scrapper";
 
 export class Bot {
   private name: string;
@@ -84,7 +85,7 @@ export class Bot {
     this.logger.debug("Generating SET Index embed...");
     const embed = new EmbedBuilder()
       .setTitle(title)
-      .setDescription(`SET Index\n \`\`\`\n${data.index}\n\`\`\``)
+      .setDescription(`SET Index\n${data.index}\n`)
       .setURL(config.get("exchange.SET.url"))
       .setColor(0xfbb034)
       .addFields([
@@ -129,7 +130,13 @@ export class Bot {
 
   async generateNASDAQIndexEmbed(title: string): Promise<APIEmbed> {
     this.logger.debug("Retrieving NASDAQ Index data...");
-    const data = await this.marketScraper.scrapeNASDAQData();
+    let data: NASDAQIndex;
+    try {
+      data = await this.marketScraper.scrapeNASDAQData();
+    } catch (error) {
+      this.logger.error("Error retrieving NASDAQ data.");
+      throw error;
+    }
     const date = new Date();
     const dateString = `วัน${dateTH[date.getDay()]} ที่ ${date.getDate()} ${
       monthTH[date.getMonth()]
@@ -137,9 +144,7 @@ export class Bot {
     this.logger.debug("Generating NASDAQ Index embed...");
     const embed = new EmbedBuilder()
       .setTitle(title)
-      .setDescription(
-        `NASDAQ Composite Index (COMP)\n \`\`\`\n${data.index}\n\`\`\``
-      )
+      .setDescription(`NASDAQ Composite Index (COMP)\n${data.index}\n`)
       .setURL(config.get("exchange.NASDAQ.url"))
       .setColor(0x0679a1)
       .addFields([
