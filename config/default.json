@@ -1,4 +1,7 @@
 {
+  "bot": {
+    "name": "Brown God (บอทกาว)"
+  },
   "exchange": {
     "SET": {
       "url": "https://www.set.or.th/th/home",

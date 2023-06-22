@@ -1,3 +1,4 @@
+import config from "config";
 import { configure, getLogger, shutdown } from "log4js";
 import moment from "moment-timezone";
 import { Bot } from "./bot";
@@ -29,15 +30,15 @@ function bootstrap() {
   logger.info(`Version: ${APP_VERSION}`);
   logger.info("Loading configuration...");
 
-  let config: Configuration;
+  let configuration: Configuration;
   try {
-    config = loadConfiguration();
-    logger.level = config.logLevel;
+    configuration = loadConfiguration();
+    logger.level = configuration.logLevel;
     logger.debug("Configuration:");
-    logger.debug("Market: " + config.market);
-    logger.debug("Alert Type: " + config.alertType);
-    logger.debug("Discord Webhook ID: " + config.discordWebhookId);
-    logger.debug("Discord Webhook Token: " + config.discordWebhookToken);
+    logger.debug("Market: " + configuration.market);
+    logger.debug("Alert Type: " + configuration.alertType);
+    logger.debug("Discord Webhook ID: " + configuration.discordWebhookId);
+    logger.debug("Discord Webhook Token: " + configuration.discordWebhookToken);
 
     logger.info(logBar);
     logger.info(`Selecting Market: ${process.env.MARKET}`);
@@ -45,7 +46,10 @@ function bootstrap() {
     logger.info(`Date: ${today}`);
     logger.info(logBar);
 
-    const tradingDayValidator = new TradingDayValidator(today, config.market);
+    const tradingDayValidator = new TradingDayValidator(
+      today,
+      configuration.market
+    );
     tradingDayValidator.checkTradingDay().then((isTradingDay) => {
       if (!isTradingDay) {
         logger.info("Today is not trading day. Exiting...");
@@ -53,15 +57,16 @@ function bootstrap() {
       } else {
         logger.info("Today is trading day. Sending alert...");
         const bot = new Bot(
-          "Brown God (บอทกาว)",
-          config.discordWebhookId,
-          config.discordWebhookToken
+          config.get("bot.name"),
+          configuration.discordWebhookId,
+          configuration.discordWebhookToken
         );
-        bot.sendMessage(config.market, config.alertType).then(
+        bot.sendMessage(configuration.market, configuration.alertType).then(
           () => {
             logger.info("Exiting...");
           },
-          (error) => {
+          (error: any) => {
+            logger.error(error.message);
             logger.info("Exiting...");
             shutdown(() => {
               process.exit(1);
@@ -70,7 +75,7 @@ function bootstrap() {
         );
       }
     });
-  } catch (error) {
+  } catch (error: any) {
     logger.error(error.message);
     shutdown(() => {
       process.exit(1);
