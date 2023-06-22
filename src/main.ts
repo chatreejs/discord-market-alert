@@ -3,8 +3,7 @@ import { Bot } from "./bot";
 import { logBar } from "./common/constants";
 import { Configuration, loadConfiguration } from "./config";
 import { TradingDayValidator } from "./trading-day-validator/trading-day-validator";
-
-const { version } = require("../package.json");
+import { APP_VERSION } from "./version";
 
 function configLogger() {
   const today = new Date();
@@ -32,7 +31,7 @@ function bootstrap() {
 
   const today = new Date();
   logger.info("Discord Market Alert Bot 🤖");
-  logger.info(`Version: ${version}`);
+  logger.info(`Version: ${APP_VERSION}`);
   logger.info("Loading configuration...");
 
   let config: Configuration;
