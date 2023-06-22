@@ -1,10 +1,10 @@
 import config from "config";
 import { APIEmbed, EmbedBuilder, WebhookClient } from "discord.js";
 import { Logger, getLogger } from "log4js";
-import { dateTH, monthTH } from "./common/constants";
+import moment from "moment-timezone";
 import { AlertType, Market } from "./common/enums";
 import { NASDAQIndex } from "./common/model";
-import { toBEYear } from "./common/utils";
+import { toBuddhistYear } from "./common/utils";
 import { configuration } from "./config";
 import { MarketScrapper } from "./market-scrapper";
 
@@ -79,9 +79,7 @@ export class Bot {
     this.logger.debug("Retrieving SET Index data...");
     const data = await this.marketScraper.scrapeSETData();
     const date = new Date();
-    const dateString = `วัน${dateTH[date.getDay()]} ที่ ${date.getDate()} ${
-      monthTH[date.getMonth()]
-    } ${toBEYear(date)}`;
+    const dateString = toBuddhistYear(moment(date).locale("th"), "LLLL");
     this.logger.debug("Generating SET Index embed...");
     const embed = new EmbedBuilder()
       .setTitle(title)
@@ -118,7 +116,7 @@ export class Bot {
       .setThumbnail(config.get("exchange.SET.iconUrl"))
       .setImage(config.get("exchange.SET.bannerUrl"))
       .setFooter({
-        text: `ข้อมูลเมื่อ ${dateString} ${date.toLocaleTimeString()}\nข้อมูลจาก settrade.com\nบอทโดย Chatree.js`,
+        text: `ข้อมูลเมื่อ ${dateString}\nข้อมูลจาก settrade.com\nบอทโดย Chatree.js`,
       });
 
     return embed.toJSON();
@@ -138,9 +136,7 @@ export class Bot {
       throw error;
     }
     const date = new Date();
-    const dateString = `วัน${dateTH[date.getDay()]} ที่ ${date.getDate()} ${
-      monthTH[date.getMonth()]
-    } ${toBEYear(date)}`;
+    const dateString = toBuddhistYear(moment(date).locale("th"), "LLLL");
     this.logger.debug("Generating NASDAQ Index embed...");
     const embed = new EmbedBuilder()
       .setTitle(title)
@@ -167,7 +163,7 @@ export class Bot {
       .setThumbnail(config.get("exchange.NASDAQ.iconUrl"))
       .setImage(config.get("exchange.NASDAQ.bannerUrl"))
       .setFooter({
-        text: `ข้อมูลเมื่อ ${dateString} ${date.toLocaleTimeString()}\nข้อมูลจาก nasdaq.com\nบอทโดย Chatree.js`,
+        text: `ข้อมูลเมื่อ ${dateString}\nข้อมูลจาก nasdaq.com\nบอทโดย Chatree.js`,
       });
 
     return embed.toJSON();

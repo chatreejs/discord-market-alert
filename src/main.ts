@@ -1,4 +1,5 @@
 import { configure, getLogger, shutdown } from "log4js";
+import moment from "moment-timezone";
 import { Bot } from "./bot";
 import { logBar } from "./common/constants";
 import { Configuration, loadConfiguration } from "./config";
@@ -6,13 +7,7 @@ import { TradingDayValidator } from "./trading-day-validator/trading-day-validat
 import { APP_VERSION } from "./version";
 
 function configLogger() {
-  const today = new Date();
-  const fileName =
-    today.getFullYear() +
-    "-" +
-    (today.getMonth() + 1).toString().padStart(2, "0") +
-    "-" +
-    today.getDate().toString().padStart(2, "0");
+  const fileName = moment().format("YYYY-MM-DD");
 
   configure({
     appenders: {
@@ -29,7 +24,7 @@ function bootstrap() {
   const logger = getLogger("[main]");
   configLogger();
 
-  const today = new Date();
+  const today = moment().toDate();
   logger.info("Discord Market Alert Bot 🤖");
   logger.info(`Version: ${APP_VERSION}`);
   logger.info("Loading configuration...");

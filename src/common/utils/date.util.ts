@@ -1,9 +1,13 @@
-import { monthTH } from "../constants";
+import moment from "moment-timezone";
 
-export function toBEYear(date: Date) {
-  return date.getFullYear() + 543;
-}
-
-export function monthTHToMonth(month: string) {
-  return monthTH.indexOf(month) + 1;
-}
+export const toBuddhistYear = (moment: moment.Moment, format): string => {
+  const christianYear = moment.format("YYYY");
+  const buddhishYear = (parseInt(christianYear) + 543).toString();
+  return moment
+    .format(
+      format
+        .replace("YYYY", buddhishYear)
+        .replace("YY", buddhishYear.substring(2, 4))
+    )
+    .replace(christianYear, buddhishYear);
+};
