@@ -35,7 +35,7 @@ export class Bot {
               "รายงานสถานการณ์ตลาดหลักทรัพย์แห่งประเทศไทย"
             )
           );
-        } else if (alertType === AlertType.MARKET_SUMMARY) {
+        } else if (alertType === AlertType.MARKET_BRIEFING) {
           embeds.push(
             await this.generateSETIndexEmbed(
               "สรุปภาวะตลาดหลักทรัพย์แห่งประเทศไทย"
@@ -51,7 +51,7 @@ export class Bot {
               "รายงานสถานการณ์ NASDAQ Composite Index"
             )
           );
-        } else if (alertType === AlertType.MARKET_SUMMARY) {
+        } else if (alertType === AlertType.MARKET_BRIEFING) {
           embeds.push(
             await this.generateNASDAQIndexEmbed(
               "สรุปภาวะ NASDAQ Composite Index"
