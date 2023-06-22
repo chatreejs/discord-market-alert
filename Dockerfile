@@ -2,9 +2,9 @@ FROM node:16.19.0 AS build
 WORKDIR /app
 
 COPY package.json ./
-RUN npm install && npm install typescript -g
+RUN yarn install && yarn global add typescript
 COPY . .
-RUN npm run build
+RUN yarn build
 
 FROM node:16.19.0-alpine AS production
 
@@ -24,7 +24,7 @@ RUN apk add --no-cache \
 ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser
 
 COPY package.json ./
-RUN npm install --only=production
+RUN yarn install --production
 COPY --from=build /app/dist /app
 COPY --from=build /app/config /app/config
 
