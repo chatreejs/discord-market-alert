@@ -9,7 +9,7 @@ export class TradingDayValidator {
   private market: string;
   private logger: Logger;
 
-  constructor(date, market) {
+  constructor(date: Date, market: string) {
     this.date = date;
     this.market = market;
     this.logger = getLogger("[TradingDayValidator]");
@@ -34,9 +34,9 @@ export class TradingDayValidator {
 
   private isSETTradingDay(holidayList: string[]): boolean {
     const now = moment().tz("Asia/Bangkok");
-    // if (now.day() === 0 || now.day() === 6) {
-    //   return false;
-    // }
+    if (now.day() === 0 || now.day() === 6) {
+      return false;
+    }
     return !holidayList.includes(now.format("YYYY-MM-DD"));
   }
 
