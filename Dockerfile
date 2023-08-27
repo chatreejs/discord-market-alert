@@ -2,7 +2,7 @@ FROM node:16.19.0 AS build
 WORKDIR /app
 
 COPY package.json ./
-RUN yarn install && yarn global add typescript
+RUN yarn install
 COPY . .
 RUN yarn build
 
