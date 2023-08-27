@@ -18,6 +18,7 @@
     }
   ],
   "scripts": {
+    "prebuild": "node -p \"'export const APP_VERSION = ' + JSON.stringify(require('./package.json').version) + ';'\" > src/version.ts",
     "build": "rm -rf dist && tsc",
     "start": "npm run build && env-cmd -f .env.dev node dist/main.js",
     "start:dev": "env-cmd -f .env.dev ts-node src/main.ts"

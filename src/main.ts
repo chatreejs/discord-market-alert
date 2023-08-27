@@ -5,6 +5,7 @@ import { Bot } from "./bot";
 import { logBar } from "./common/constants";
 import { Configuration, loadConfiguration } from "./config";
 import { TradingDayValidator } from "./trading-day-validator/trading-day-validator";
+import { APP_VERSION } from "./version";
 
 function configLogger() {
   const fileName = moment().format("YYYY-MM-DD");
@@ -26,7 +27,7 @@ function bootstrap() {
 
   const today = moment().toDate();
   logger.info("Discord Market Alert Bot 🤖");
-  logger.info(`Version: ${process.env.npm_package_version}`);
+  logger.info(`Version: ${APP_VERSION}`);
   logger.info("Loading configuration...");
 
   let configuration: Configuration;
