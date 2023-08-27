@@ -1,6 +1,6 @@
+import { Logger, getLogger } from "log4js";
 import puppeteer from "puppeteer";
 import { NASDAQIndex, SETIndex } from "../common/model";
-import { Logger, getLogger } from "log4js";
 import { configuration } from "../config";
 
 export class MarketScrapper {
@@ -57,6 +57,7 @@ export class MarketScrapper {
         (element) => element.textContent,
         changeElement
       );
+
       let percentChange = await page.evaluate(
         (element) => element.textContent,
         percentChangeElement
@@ -87,6 +88,14 @@ export class MarketScrapper {
         volume: volume.trim(),
         value: value.trim(),
       };
+
+      this.logger.debug(`index: ${data.index}`);
+      this.logger.debug(`change: ${data.change}`);
+      this.logger.debug(`percentChange: ${data.percentChange}`);
+      this.logger.debug(`max: ${data.max}`);
+      this.logger.debug(`min: ${data.min}`);
+      this.logger.debug(`volume: ${data.volume}`);
+      this.logger.debug(`value: ${data.value}`);
 
       browser.close();
       this.logger.debug("Scraping SET data completed.");
