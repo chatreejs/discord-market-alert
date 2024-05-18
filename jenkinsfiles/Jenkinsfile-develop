@@ -80,9 +80,9 @@ pipeline {
           withCredentials([sshUserPrivateKey(credentialsId: 'ctlssh-credential', keyFileVariable: 'IDENTITY', usernameVariable: 'USERNAME')]) {
             sh "ssh -o StrictHostKeyChecking=no -i ${IDENTITY} ${USERNAME}@${DESTINATION_SERVER} \'docker pull ${IMAGE_URL}:${BUILD_VERSION} \
             && cd /opt/app/discord-market-alert \
-            && docker-compose down \
+            && docker compose down \
             && sed -i \"s/^\\(TAG_VERSION=\\).*/TAG_VERSION=${BUILD_VERSION}/g\" .env \
-            && docker-compose up -d\'"
+            && docker compose up -d\'"
           }
         }
       }
