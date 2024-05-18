@@ -76,13 +76,13 @@ pipeline {
     stage('Deploy') {
       steps {
         script {
-          withCredentials([usernamePassword(credentialsId: 'srv-dev-01-webusr-credential', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
+          withCredentials([sshUserPrivateKey(credentialsId: 'ctlssh-credential', keyFileVariable: 'IDENTITY', passphraseVariable: '', usernameVariable: 'USERNAME')]) {
             def remote = [: ]
             remote.name = 'srv-dev-01'
             remote.host = '10.13.21.1'
             remote.allowAnyHosts = true
             remote.user = USERNAME
-            remote.password = PASSWORD
+            remote.identityFile = IDENTITY
             sshCommand remote: remote, command: "cd /opt/app/discord-market-alert ; sed -i \"s/^\\(TAG_VERSION=\\).*/TAG_VERSION=${BUILD_VERSION}/g\" .env"
             sshCommand remote: remote, command: "cd /opt/app/discord-market-alert ; docker compose up -d"
           }
