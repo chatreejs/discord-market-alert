@@ -3,7 +3,7 @@ pipeline {
 
   environment {
     VERSION = "1.4.0"
-    IMAGE_URL = "chatreejs/discord-market-alert"
+    IMAGE_URL = "registry.chatree.dev/discord-market-alert"
   }
 
   stages {
@@ -60,8 +60,8 @@ pipeline {
 
     stage('Push to registry') {
       steps {
-        withCredentials([usernamePassword(credentialsId: 'docker-hub-credential', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
-          sh 'docker login -u $USERNAME -p $PASSWORD'
+        withCredentials([usernamePassword(credentialsId: 'chatree-docker-registry-credential', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
+          sh 'docker login registry.chatree.dev -u $USERNAME -p $PASSWORD'
           sh 'docker push ${IMAGE_URL}:${BUILD_VERSION}'
         }
       }
@@ -73,9 +73,20 @@ pipeline {
       }
     }
 
-    stage('Deploy to Kubernetes') {
+    stage('Deploy') {
       steps {
-        echo 'Deploy to Kubernetes'
+        script {
+          withCredentials([usernamePassword(credentialsId: 'srv-dev-01-webusr-credential', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
+            def remote = [: ]
+            remote.name = 'srv-dev-01'
+            remote.host = '10.13.21.1'
+            remote.allowAnyHosts = true
+            remote.user = USERNAME
+            remote.password = PASSWORD
+            sshCommand remote: remote, command: "cd /opt/app/discord-market-alert ; sed -i \"s/^\\(TAG_VERSION=\\).*/TAG_VERSION=${BUILD_VERSION}/g\" .env"
+            sshCommand remote: remote, command: "cd /opt/app/discord-market-alert ; docker compose up -d"
+          }
+        }
       }
     }
 
