@@ -1,30 +1,28 @@
-import { AlertType, Market } from "../common/enums";
-
 export interface Configuration {
-  market: string;
-  alertType: string;
   botClientId: string;
+  logLevel?: string;
   discordWebhookId: string;
   discordWebhookToken: string;
-  logLevel?: string;
+  marketSETOpenCron: string;
+  marketSETCloseCron: string;
 }
 
 export const configuration: Configuration = {
-  market: process.env.MARKET,
   botClientId: process.env.BOT_CLIENT_ID,
-  alertType: process.env.ALERT_TYPE,
+  logLevel: process.env.LOG_LEVEL || "info",
   discordWebhookId: process.env.DISCORD_WEBHOOK_ID,
   discordWebhookToken: process.env.DISCORD_WEBHOOK_TOKEN,
-  logLevel: process.env.LOG_LEVEL || "info",
+  marketSETOpenCron: process.env.MARKET_SET_OPEN,
+  marketSETCloseCron: process.env.MARKET_SET_CLOSE,
 };
 
 export function loadConfiguration(): Configuration {
   const requiredEnvVars = [
-    "MARKET",
-    "ALERT_TYPE",
     "BOT_CLIENT_ID",
     "DISCORD_WEBHOOK_ID",
     "DISCORD_WEBHOOK_TOKEN",
+    "MARKET_SET_OPEN",
+    "MARKET_SET_CLOSE",
   ];
   const errorEnvVars = requiredEnvVars.filter((envVar) => !process.env[envVar]);
   if (errorEnvVars.length > 0) {
@@ -43,11 +41,5 @@ export function loadConfiguration(): Configuration {
 
 function validateConfiguration(config: Configuration): string[] {
   const errors = [];
-  if (!(config.market in Market)) {
-    errors.push(`MARKET: ${config.market}`);
-  }
-  if (!(config.alertType in AlertType)) {
-    errors.push(`ALERT_TYPE: ${config.alertType}`);
-  }
   return errors;
 }

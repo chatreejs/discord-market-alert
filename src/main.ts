@@ -1,15 +1,23 @@
 import config from "config";
+import { CronJob } from "cron";
 import { configure, getLogger, shutdown } from "log4js";
 import moment from "moment-timezone";
 import { Bot } from "./bot";
 import { logBar } from "./common/constants";
+import { AlertType, Market } from "./common/enums";
 import { Configuration, loadConfiguration } from "./config";
 import { TradingDayValidator } from "./trading-day-validator/trading-day-validator";
 import { APP_VERSION } from "./version";
 
-function configLogger() {
-  const fileName = moment().format("YYYY-MM-DD");
+process.on("SIGINT", function () {
+  logger.info("Caught interrupt signal");
+  shutdown(() => {
+    process.exit(0);
+  });
+});
 
+const configLogger = () => {
+  const fileName = moment().format("YYYY-MM-DD");
   configure({
     appenders: {
       console: { type: "console" },
@@ -19,68 +27,87 @@ function configLogger() {
       default: { appenders: ["console", "file"], level: "debug" },
     },
   });
-}
+};
 
-function bootstrap() {
-  const logger = getLogger("[main]");
-  configLogger();
+const logger = getLogger("[main]");
+configLogger();
 
-  const today = moment().toDate();
-  logger.info("Discord Market Alert Bot 🤖");
-  logger.info(`Version: ${APP_VERSION}`);
+const today = moment().toDate();
+logger.info("Discord Market Alert Bot 🤖");
+logger.info(`Version: ${APP_VERSION}`);
+
+let configuration: Configuration;
+try {
   logger.info("Loading configuration...");
+  configuration = loadConfiguration();
+  logger.level = configuration.logLevel;
+  logger.debug("Configuration:");
+  logger.debug(`BOT Client ID: ${configuration.botClientId}`);
+  logger.debug(`Discord Webhook ID: ${configuration.discordWebhookId}`);
+  logger.debug(`Discord Webhook Token: ${configuration.discordWebhookToken}`);
+  logger.debug(`Market SET Open Cron: ${configuration.marketSETOpenCron}`);
+  logger.debug(`Market SET Close Cron: ${configuration.marketSETCloseCron}`);
+  logger.info("Configuration loaded successfully");
+  logger.info(logBar);
 
-  let configuration: Configuration;
-  try {
-    configuration = loadConfiguration();
-    logger.level = configuration.logLevel;
-    logger.debug("Configuration:");
-    logger.debug("Market: " + configuration.market);
-    logger.debug("Alert Type: " + configuration.alertType);
-    logger.debug("Discord Webhook ID: " + configuration.discordWebhookId);
-    logger.debug("Discord Webhook Token: " + configuration.discordWebhookToken);
+  // Create Cron Job
+  logger.info("Creating Cron Job");
+  logger.debug("Market SET Open Cron: " + configuration.marketSETOpenCron);
+  const marketSETOpenJob = new CronJob(
+    configuration.marketSETOpenCron,
+    () => {
+      logger.info("Market SET Open Cron Job started");
+      sendMarketAlert(Market.SET, AlertType.MARKET_OPEN);
+    },
+    null,
+    true,
+    "Asia/Bangkok"
+  );
 
-    logger.info(logBar);
-    logger.info(`Selecting Market: ${process.env.MARKET}`);
-    logger.info(`Selecting Alert Type: ${process.env.ALERT_TYPE}`);
-    logger.info(`Date: ${today}`);
-    logger.info(logBar);
+  logger.debug("Market SET Close Cron: " + configuration.marketSETCloseCron);
+  const marketSETCloseJob = new CronJob(
+    configuration.marketSETCloseCron,
+    () => {
+      logger.info("Market SET Close Cron Job started");
+      sendMarketAlert(Market.SET, AlertType.MARKET_BRIEFING);
+    },
+    null,
+    true,
+    "Asia/Bangkok"
+  );
 
-    const tradingDayValidator = new TradingDayValidator(
-      today,
-      configuration.market
-    );
-    tradingDayValidator.checkTradingDay().then((isTradingDay) => {
-      if (!isTradingDay) {
-        logger.info("Today is not trading day. Exiting...");
-        process.exit(0);
-      } else {
-        logger.info("Today is trading day. Sending alert...");
-        const bot = new Bot(
-          config.get("bot.name"),
-          configuration.discordWebhookId,
-          configuration.discordWebhookToken
-        );
-        bot.sendMessage(configuration.market, configuration.alertType).then(
-          () => {
-            logger.info("Exiting...");
-          },
-          (error: any) => {
-            logger.error(error.message);
-            logger.info("Exiting...");
-            shutdown(() => {
-              process.exit(1);
-            });
-          }
-        );
-      }
-    });
-  } catch (error: any) {
-    logger.error(error.message);
-    shutdown(() => {
-      process.exit(1);
-    });
-  }
+  // Start Cron Job
+  logger.info("Starting Cron Job");
+  marketSETOpenJob.start();
+  marketSETCloseJob.start();
+} catch (error: any) {
+  logger.error(error.message);
+  shutdown(() => {
+    process.exit(1);
+  });
 }
 
-bootstrap();
+const sendMarketAlert = (market: string, alertType: string) => {
+  const tradingDayValidator = new TradingDayValidator(today, market);
+  tradingDayValidator.checkTradingDay().then((isTradingDay) => {
+    if (!isTradingDay) {
+      logger.info("Today is not trading day. Exiting...");
+      process.exit(0);
+    } else {
+      logger.info("Today is trading day. Sending alert...");
+      const bot = new Bot(
+        config.get("discordbot.name"),
+        configuration.discordWebhookId,
+        configuration.discordWebhookToken
+      );
+      bot.sendMessage(market, alertType).then(
+        () => {
+          logger.info("Sending message complete");
+        },
+        (error: any) => {
+          logger.error(error.message);
+        }
+      );
+    }
+  });
+};
