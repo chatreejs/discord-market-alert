@@ -91,8 +91,7 @@ const sendMarketAlert = (market: string, alertType: string) => {
   const tradingDayValidator = new TradingDayValidator(today, market);
   tradingDayValidator.checkTradingDay().then((isTradingDay) => {
     if (!isTradingDay) {
-      logger.info("Today is not trading day. Exiting...");
-      process.exit(0);
+      logger.info("Today is not trading day. Skip...");
     } else {
       logger.info("Today is trading day. Sending alert...");
       const bot = new Bot(
