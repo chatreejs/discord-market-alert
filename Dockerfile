@@ -28,11 +28,11 @@ RUN yarn install --production
 COPY --from=build /app/dist /app
 COPY --from=build /app/config /app/config
 
-RUN addgroup -S pptruser && adduser -S -G pptruser pptruser \
-    && mkdir -p /home/pptruser/Downloads /app \
-    && chown -R pptruser:pptruser /home/pptruser \
-    && chown -R pptruser:pptruser /app
+RUN addgroup -S webusr && adduser -S -G webusr webusr \
+    && mkdir -p /home/webusr/Downloads /app \
+    && chown -R webusr:webusr /home/webusr \
+    && chown -R webusr:webusr /app
 
-USER pptruser
+USER webusr
 
 CMD [ "node", "main.js" ]
