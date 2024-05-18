@@ -1,4 +1,4 @@
-FROM node:16.19.0 AS build
+FROM node:18.19.0 AS build
 WORKDIR /app
 
 COPY package.json ./
@@ -6,7 +6,7 @@ RUN yarn install
 COPY . .
 RUN yarn build
 
-FROM node:16.19.0-alpine AS production
+FROM node:18.19.0-alpine AS production
 
 WORKDIR /app
 
