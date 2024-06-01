@@ -1,20 +1,23 @@
+import config from "config";
+import { CronJob } from "cron";
 import { configure, getLogger, shutdown } from "log4js";
+import moment from "moment-timezone";
 import { Bot } from "./bot";
-import { Configuration, loadConfiguration } from "./config";
-import { HolidayValidator } from "./holiday-validator/holiday-validator";
 import { logBar } from "./common/constants";
+import { AlertType, Market } from "./common/enums";
+import { Configuration, loadConfiguration } from "./config";
+import { TradingDayValidator } from "./trading-day-validator/trading-day-validator";
+import { APP_VERSION } from "./version";
 
-const version = require("./package.json").version;
+process.on("SIGINT", function () {
+  logger.info("Caught interrupt signal");
+  shutdown(() => {
+    process.exit(0);
+  });
+});
 
-function configLogger() {
-  const today = new Date();
-  const fileName =
-    today.getFullYear() +
-    "-" +
-    (today.getMonth() + 1).toString().padStart(2, "0") +
-    "-" +
-    today.getDate().toString().padStart(2, "0");
-
+const configLogger = () => {
+  const fileName = moment().format("YYYY-MM-DD");
   configure({
     appenders: {
       console: { type: "console" },
@@ -24,56 +27,86 @@ function configLogger() {
       default: { appenders: ["console", "file"], level: "debug" },
     },
   });
-}
+};
 
-function bootstrap() {
-  const logger = getLogger("[main]");
-  configLogger();
+const logger = getLogger("[main]");
+configLogger();
 
-  const today = new Date();
-  logger.info("Discord Market Alert Bot 🤖");
-  logger.info(`Version: ${version}`);
+const today = moment().toDate();
+logger.info("Discord Market Alert Bot 🤖");
+logger.info(`Version: ${APP_VERSION}`);
+
+let configuration: Configuration;
+try {
   logger.info("Loading configuration...");
+  configuration = loadConfiguration();
+  logger.level = configuration.logLevel;
+  logger.debug("Configuration:");
+  logger.debug(`BOT Client ID: ${configuration.botClientId}`);
+  logger.debug(`Discord Webhook ID: ${configuration.discordWebhookId}`);
+  logger.debug(`Discord Webhook Token: ${configuration.discordWebhookToken}`);
+  logger.debug(`Market SET Open Cron: ${configuration.marketSETOpenCron}`);
+  logger.debug(`Market SET Close Cron: ${configuration.marketSETCloseCron}`);
+  logger.info("Configuration loaded successfully");
+  logger.info(logBar);
 
-  let config: Configuration;
-  try {
-    config = loadConfiguration();
-    logger.level = config.logLevel;
-    logger.debug("Configuration:");
-    logger.debug("Market: " + config.market);
-    logger.debug("Alert Type: " + config.alertType);
-    logger.debug("Discord Webhook ID: " + config.discordWebhookId);
-    logger.debug("Discord Webhook Token: " + config.discordWebhookToken);
+  // Create Cron Job
+  logger.info("Creating Cron Job");
+  logger.debug("Market SET Open Cron: " + configuration.marketSETOpenCron);
+  const marketSETOpenJob = new CronJob(
+    configuration.marketSETOpenCron,
+    () => {
+      logger.info("Market SET Open Cron Job started");
+      sendMarketAlert(Market.SET, AlertType.MARKET_OPEN);
+    },
+    null,
+    true,
+    "Asia/Bangkok"
+  );
 
-    logger.info(logBar);
-    logger.info(`Selecting Market: ${process.env.MARKET}`);
-    logger.info(`Selecting Alert Type: ${process.env.ALERT_TYPE}`);
-    logger.info(`Date: ${today}`);
-    logger.info(logBar);
+  logger.debug("Market SET Close Cron: " + configuration.marketSETCloseCron);
+  const marketSETCloseJob = new CronJob(
+    configuration.marketSETCloseCron,
+    () => {
+      logger.info("Market SET Close Cron Job started");
+      sendMarketAlert(Market.SET, AlertType.MARKET_BRIEFING);
+    },
+    null,
+    true,
+    "Asia/Bangkok"
+  );
 
-    const holidayValidator = new HolidayValidator(today, config.market);
-    holidayValidator.checkHoliday().then((isHoliday) => {
-      if (isHoliday) {
-        logger.info("Today is holiday. Exiting...");
-        process.exit(0);
-      } else {
-        logger.info("Today is not holiday. Sending alert...");
-        const bot = new Bot(
-          "Brown God (บอทกาว)",
-          config.discordWebhookId,
-          config.discordWebhookToken
-        );
-        bot.sendMessage(config.market, config.alertType).then(() => {
-          logger.info("Exiting...");
-        });
-      }
-    });
-  } catch (error) {
-    logger.error(error.message);
-    shutdown(() => {
-      process.exit(1);
-    });
-  }
+  // Start Cron Job
+  logger.info("Starting Cron Job");
+  marketSETOpenJob.start();
+  marketSETCloseJob.start();
+} catch (error: any) {
+  logger.error(error.message);
+  shutdown(() => {
+    process.exit(1);
+  });
 }
 
-bootstrap();
+const sendMarketAlert = (market: string, alertType: string) => {
+  const tradingDayValidator = new TradingDayValidator(today, market);
+  tradingDayValidator.checkTradingDay().then((isTradingDay) => {
+    if (!isTradingDay) {
+      logger.info("Today is not trading day. Skip...");
+    } else {
+      logger.info("Today is trading day. Sending alert...");
+      const bot = new Bot(
+        config.get("discordbot.name"),
+        configuration.discordWebhookId,
+        configuration.discordWebhookToken
+      );
+      bot.sendMessage(market, alertType).then(
+        () => {
+          logger.info("Sending message complete");
+        },
+        (error: any) => {
+          logger.error(error.message);
+        }
+      );
+    }
+  });
+};

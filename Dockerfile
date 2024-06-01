@@ -1,12 +1,12 @@
-FROM node:16.19.0 AS build
+FROM node:18.19.0 AS build
 WORKDIR /app
 
 COPY package.json ./
-RUN npm install && npm install typescript -g
+RUN yarn install
 COPY . .
-RUN npm run build
+RUN yarn build
 
-FROM node:16.19.0-alpine AS production
+FROM node:18.19.0-alpine AS production
 
 WORKDIR /app
 
@@ -24,15 +24,15 @@ RUN apk add --no-cache \
 ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser
 
 COPY package.json ./
-RUN npm install --only=production
+RUN yarn install --production
 COPY --from=build /app/dist /app
 COPY --from=build /app/config /app/config
 
-RUN addgroup -S pptruser && adduser -S -G pptruser pptruser \
-    && mkdir -p /home/pptruser/Downloads /app \
-    && chown -R pptruser:pptruser /home/pptruser \
-    && chown -R pptruser:pptruser /app
+RUN addgroup -S webusr && adduser -S -G webusr webusr \
+    && mkdir -p /home/webusr/Downloads /app \
+    && chown -R webusr:webusr /home/webusr \
+    && chown -R webusr:webusr /app
 
-USER pptruser
+USER webusr
 
 CMD [ "node", "main.js" ]

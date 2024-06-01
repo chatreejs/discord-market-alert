@@ -1,11 +1,12 @@
 import config from "config";
 import { APIEmbed, EmbedBuilder, WebhookClient } from "discord.js";
-import { dateTH, monthTH } from "./common/constants";
-import { toBEYear } from "./common/utils";
-import { MarketScrapper } from "./market-scrapper";
-import { AlertType, Market } from "./common/enums";
 import { Logger, getLogger } from "log4js";
+import moment from "moment-timezone";
+import { AlertType, Market } from "./common/enums";
+import { NASDAQIndex } from "./common/model";
+import { toBuddhistYear } from "./common/utils";
 import { configuration } from "./config";
+import { MarketScrapper } from "./market-scrapper";
 
 export class Bot {
   private name: string;
@@ -34,7 +35,7 @@ export class Bot {
               "รายงานสถานการณ์ตลาดหลักทรัพย์แห่งประเทศไทย"
             )
           );
-        } else if (alertType === AlertType.MARKET_SUMMARY) {
+        } else if (alertType === AlertType.MARKET_BRIEFING) {
           embeds.push(
             await this.generateSETIndexEmbed(
               "สรุปภาวะตลาดหลักทรัพย์แห่งประเทศไทย"
@@ -50,7 +51,7 @@ export class Bot {
               "รายงานสถานการณ์ NASDAQ Composite Index"
             )
           );
-        } else if (alertType === AlertType.MARKET_SUMMARY) {
+        } else if (alertType === AlertType.MARKET_BRIEFING) {
           embeds.push(
             await this.generateNASDAQIndexEmbed(
               "สรุปภาวะ NASDAQ Composite Index"
@@ -78,13 +79,11 @@ export class Bot {
     this.logger.debug("Retrieving SET Index data...");
     const data = await this.marketScraper.scrapeSETData();
     const date = new Date();
-    const dateString = `วัน${dateTH[date.getDay()]} ที่ ${date.getDate()} ${
-      monthTH[date.getMonth()]
-    } ${toBEYear(date)}`;
+    const dateString = toBuddhistYear(moment(date).locale("th"), "LLLL");
     this.logger.debug("Generating SET Index embed...");
     const embed = new EmbedBuilder()
       .setTitle(title)
-      .setDescription(`SET Index\n \`\`\`\n${data.index}\n\`\`\``)
+      .setDescription(`SET Index\n${data.index}\n`)
       .setURL(config.get("exchange.SET.url"))
       .setColor(0xfbb034)
       .addFields([
@@ -117,7 +116,7 @@ export class Bot {
       .setThumbnail(config.get("exchange.SET.iconUrl"))
       .setImage(config.get("exchange.SET.bannerUrl"))
       .setFooter({
-        text: `ข้อมูลเมื่อ ${dateString} ${date.toLocaleTimeString()}\nข้อมูลจาก settrade.com\nบอทโดย Chatree.js`,
+        text: `ข้อมูลเมื่อ ${dateString}\nข้อมูลจาก settrade.com\nบอทโดย Chatree.js`,
       });
 
     return embed.toJSON();
@@ -129,17 +128,19 @@ export class Bot {
 
   async generateNASDAQIndexEmbed(title: string): Promise<APIEmbed> {
     this.logger.debug("Retrieving NASDAQ Index data...");
-    const data = await this.marketScraper.scrapeNASDAQData();
+    let data: NASDAQIndex;
+    try {
+      data = await this.marketScraper.scrapeNASDAQData();
+    } catch (error) {
+      this.logger.error("Error retrieving NASDAQ data.");
+      throw error;
+    }
     const date = new Date();
-    const dateString = `วัน${dateTH[date.getDay()]} ที่ ${date.getDate()} ${
-      monthTH[date.getMonth()]
-    } ${toBEYear(date)}`;
+    const dateString = toBuddhistYear(moment(date).locale("th"), "LLLL");
     this.logger.debug("Generating NASDAQ Index embed...");
     const embed = new EmbedBuilder()
       .setTitle(title)
-      .setDescription(
-        `NASDAQ Composite Index (COMP)\n \`\`\`\n${data.index}\n\`\`\``
-      )
+      .setDescription(`NASDAQ Composite Index (COMP)\n${data.index}\n`)
       .setURL(config.get("exchange.NASDAQ.url"))
       .setColor(0x0679a1)
       .addFields([
@@ -162,7 +163,7 @@ export class Bot {
       .setThumbnail(config.get("exchange.NASDAQ.iconUrl"))
       .setImage(config.get("exchange.NASDAQ.bannerUrl"))
       .setFooter({
-        text: `ข้อมูลเมื่อ ${dateString} ${date.toLocaleTimeString()}\nข้อมูลจาก nasdaq.com\nบอทโดย Chatree.js`,
+        text: `ข้อมูลเมื่อ ${dateString}\nข้อมูลจาก nasdaq.com\nบอทโดย Chatree.js`,
       });
 
     return embed.toJSON();

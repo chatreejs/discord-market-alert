@@ -8,6 +8,7 @@ services:
     environment:
       - MARKET=${MARKET}
       - ALERT_TYPE=${ALERT_TYPE}
+      - BOT_CLIENT_ID=${BOT_CLIENT_ID}
       - DISCORD_WEBHOOK_ID=${DISCORD_WEBHOOK_ID}
       - DISCORD_WEBHOOK_TOKEN=${DISCORD_WEBHOOK_TOKEN}
       - TZ=Asia/Bangkok
