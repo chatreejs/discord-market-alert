@@ -9,7 +9,7 @@ import { NASDAQIndex } from "@interfaces";
 import { MarketScrapper } from "@services";
 import { toBuddhistYear } from "@utils";
 
-export class Bot {
+export class DiscordBot {
   private name: string;
   private webhookClient: WebhookClient;
   private marketScraper: MarketScrapper;
@@ -22,7 +22,7 @@ export class Bot {
       token: webhookToken,
     });
     this.marketScraper = new MarketScrapper();
-    this.logger = getLogger("[Bot]");
+    this.logger = getLogger("[DiscordBot]");
     this.logger.level = configuration.logLevel;
   }
 

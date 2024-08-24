@@ -2,24 +2,20 @@ import axios from "axios";
 import { Logger, getLogger } from "log4js";
 import moment from "moment-timezone";
 
-import { configuration } from "@configs";
+import { Configuration } from "@configs";
 import { Market } from "@enums";
 
 export class TradingDayValidator {
-  private date: Date;
-  private market: string;
   private logger: Logger;
 
-  constructor(date: Date, market: string) {
-    this.date = date;
-    this.market = market;
+  constructor(private configuration: Configuration) {
     this.logger = getLogger("[TradingDayValidator]");
     this.logger.level = configuration.logLevel;
   }
 
-  async checkTradingDay(): Promise<boolean> {
+  async checkTradingDay(market: string): Promise<boolean> {
     let holidayList = [];
-    switch (this.market) {
+    switch (market) {
       case Market.SET:
         this.logger.info("Checking SET trading day...");
         holidayList = await this.loadThaiHolidayDate();
@@ -50,13 +46,14 @@ export class TradingDayValidator {
   }
 
   private async loadThaiHolidayDate(): Promise<string[]> {
-    const year = this.date.getFullYear();
+    const date = moment().tz("Asia/Bangkok");
+    const year = date.year();
     const url = `https://apigw1.bot.or.th/bot/public/financial-institutions-holidays`;
     this.logger.debug(`Call Thai holiday API from ${url}`);
 
     const response = await axios.get(url, {
       headers: {
-        "x-ibm-client-id": configuration.botClientId,
+        "x-ibm-client-id": this.configuration.botClientId,
         accept: "application/json",
       },
       params: {
