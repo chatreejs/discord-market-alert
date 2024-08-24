@@ -43,8 +43,7 @@ try {
   logger.debug(`BOT Client ID: ${configuration.botClientId}`);
   logger.debug(`Discord Webhook ID: ${configuration.discordWebhookId}`);
   logger.debug(`Discord Webhook Token: ${configuration.discordWebhookToken}`);
-  logger.debug(`Market SET Open Cron: ${configuration.marketSETOpenCron}`);
-  logger.debug(`Market SET Close Cron: ${configuration.marketSETCloseCron}`);
+  logger.debug(`Enabled Market: ${configuration.enableMarket}`);
   logger.info("Configuration loaded successfully");
   logger.info(logBar);
 

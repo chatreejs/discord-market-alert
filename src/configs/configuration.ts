@@ -1,16 +1,20 @@
 import { Market } from "@enums";
 
+interface CrontabConfig {
+  open: string;
+  close: string;
+}
+
 export interface Configuration {
   botClientId: string;
   logLevel?: string;
   discordWebhookId: string;
   discordWebhookToken: string;
   enableMarket: string[];
-  marketSETOpenCron: string;
-  marketSETCloseCron: string;
+  crontabConfig: Map<Market, CrontabConfig>;
 }
 
-export const configuration: Configuration = {
+const configuration: Configuration = {
   botClientId: process.env.BOT_CLIENT_ID,
   logLevel: process.env.LOG_LEVEL || "info",
   discordWebhookId: process.env.DISCORD_WEBHOOK_ID,
@@ -18,8 +22,7 @@ export const configuration: Configuration = {
   enableMarket: process.env.ENABLE_MARKET
     ? process.env.ENABLE_MARKET.split(",")
     : [],
-  marketSETOpenCron: process.env.MARKET_SET_OPEN,
-  marketSETCloseCron: process.env.MARKET_SET_CLOSE,
+  crontabConfig: new Map<Market, CrontabConfig>(),
 };
 
 export function loadConfiguration(): Configuration {
@@ -28,8 +31,6 @@ export function loadConfiguration(): Configuration {
     "DISCORD_WEBHOOK_ID",
     "DISCORD_WEBHOOK_TOKEN",
     "ENABLE_MARKET",
-    "MARKET_SET_OPEN",
-    "MARKET_SET_CLOSE",
   ];
   const errorEnvVars = requiredEnvVars.filter((envVar) => !process.env[envVar]);
   if (errorEnvVars.length > 0) {
@@ -39,10 +40,17 @@ export function loadConfiguration(): Configuration {
   }
 
   const config = configuration;
+  config.enableMarket.forEach((market) => {
+    config.crontabConfig.set(market as Market, {
+      open: process.env[`MARKET_${market}_OPEN_CRON`],
+      close: process.env[`MARKET_${market}_CLOSE_CRON`],
+    });
+  });
   const errors = validateConfiguration(config);
   if (errors.length > 0) {
     throw new Error(`Invalid configuration: ${errors.join(", ")}`);
   }
+
   return config;
 }
 
@@ -56,6 +64,13 @@ function validateConfiguration(config: Configuration): string[] {
     if (invalidMarkets.length > 0) {
       errors.push(`Invalid market: ${invalidMarkets.join(", ")}`);
     }
+    // check cronConfig for all enabled markets
+    config.enableMarket.forEach((market) => {
+      const crontab = config.crontabConfig.get(market as Market);
+      if (crontab.open === undefined || crontab.close === undefined) {
+        errors.push(`Missing crontab config for ${market}`);
+      }
+    });
   }
   return errors;
 }

@@ -1,15 +1,14 @@
 import { Logger, getLogger } from "log4js";
 import puppeteer from "puppeteer";
 
-import { configuration } from "@configs";
 import { NASDAQIndex, SETIndex } from "@interfaces";
 
 export class MarketScrapper {
   private logger: Logger;
 
-  constructor() {
+  constructor(logLevel: string = "info") {
     this.logger = getLogger("[MarketScrapper]");
-    this.logger.level = configuration.logLevel;
+    this.logger.level = logLevel;
   }
 
   async scrapeSETData(): Promise<SETIndex> {

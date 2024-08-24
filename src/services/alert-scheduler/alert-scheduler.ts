@@ -21,7 +21,8 @@ export class AlertScheduler {
     this.discordBot = new DiscordBot(
       config.get("discordbot.name"),
       configuration.discordWebhookId,
-      configuration.discordWebhookToken
+      configuration.discordWebhookToken,
+      configuration.logLevel
     );
     this.tradingDayValidator = new TradingDayValidator(configuration);
   }
@@ -45,10 +46,10 @@ export class AlertScheduler {
   private createSETSchedule(): void {
     this.logger.debug(
       "Configuring SET market open using cron: " +
-        this.configuration.marketSETOpenCron
+        this.configuration.crontabConfig.get(Market.SET).open
     );
     const marketSETOpenJob = new CronJob(
-      this.configuration.marketSETOpenCron,
+      this.configuration.crontabConfig.get(Market.SET).open,
       () => {
         this.logger.info("Market SET Open cronjob triggered");
         this.sendAlert(Market.SET, AlertType.MARKET_OPEN);
@@ -60,10 +61,10 @@ export class AlertScheduler {
 
     this.logger.debug(
       "Configuring SET market close using cron: " +
-        this.configuration.marketSETCloseCron
+        this.configuration.crontabConfig.get(Market.SET).close
     );
     const marketSETCloseJob = new CronJob(
-      this.configuration.marketSETCloseCron,
+      this.configuration.crontabConfig.get(Market.SET).close,
       () => {
         this.logger.info("Market SET Close cronjob triggered");
         this.sendAlert(Market.SET, AlertType.MARKET_BRIEFING);
