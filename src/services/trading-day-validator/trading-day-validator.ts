@@ -1,8 +1,9 @@
 import axios from "axios";
 import { Logger, getLogger } from "log4js";
 import moment from "moment-timezone";
-import { Market } from "../common/enums";
-import { configuration } from "../config";
+
+import { configuration } from "@configs";
+import { Market } from "@enums";
 
 export class TradingDayValidator {
   private date: Date;

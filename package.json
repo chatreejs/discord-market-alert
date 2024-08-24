@@ -20,13 +20,14 @@
   "scripts": {
     "prebuild": "node -p \"'export const APP_VERSION = ' + JSON.stringify(require('./package.json').version) + ';'\" > src/version.ts",
     "build": "rm -rf dist && tsc",
-    "start": "npm run build && env-cmd -f .env.dev node dist/main.js",
+    "start": "npm run build && env-cmd -f .env.develop node dist/main.js",
     "start:develop": "env-cmd -f .env.develop ts-node src/main.ts"
   },
   "devDependencies": {
     "@types/config": "^3.3.0",
     "@types/node": "^18.11.14",
     "env-cmd": "^10.1.0",
+    "module-alias": "^2.2.3",
     "ts-node": "^10.9.1",
     "typescript": "^5.1.0"
   },
@@ -38,5 +39,13 @@
     "log4js": "^6.9.1",
     "moment-timezone": "^0.5.43",
     "puppeteer": "^19.4.1"
+  },
+  "_moduleAliases": {
+    "@configs": "dist/configs",
+    "@constants": "dist/constants",
+    "@enums": "dist/enums",
+    "@interfaces": "dist/interfaces",
+    "@services": "dist/services",
+    "@utils": "dist/utils"
   }
 }

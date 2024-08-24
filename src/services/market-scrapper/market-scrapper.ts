@@ -1,7 +1,8 @@
 import { Logger, getLogger } from "log4js";
 import puppeteer from "puppeteer";
-import { NASDAQIndex, SETIndex } from "../common/model";
-import { configuration } from "../config";
+
+import { configuration } from "@configs";
+import { NASDAQIndex, SETIndex } from "@interfaces";
 
 export class MarketScrapper {
   private logger: Logger;

@@ -1,12 +1,14 @@
 import config from "config";
 import { CronJob } from "cron";
 import { configure, getLogger, shutdown } from "log4js";
+import "module-alias/register";
 import moment from "moment-timezone";
+
+import { Configuration, loadConfiguration } from "@configs";
+import { logBar } from "@constants";
+import { AlertType, Market } from "@enums";
+import { TradingDayValidator } from "@services";
 import { Bot } from "./bot";
-import { logBar } from "./common/constants";
-import { AlertType, Market } from "./common/enums";
-import { Configuration, loadConfiguration } from "./config";
-import { TradingDayValidator } from "./trading-day-validator/trading-day-validator";
 import { APP_VERSION } from "./version";
 
 process.on("SIGINT", function () {

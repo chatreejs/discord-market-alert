@@ -2,11 +2,12 @@ import config from "config";
 import { APIEmbed, EmbedBuilder, WebhookClient } from "discord.js";
 import { Logger, getLogger } from "log4js";
 import moment from "moment-timezone";
-import { AlertType, Market } from "./common/enums";
-import { NASDAQIndex } from "./common/model";
-import { toBuddhistYear } from "./common/utils";
-import { configuration } from "./config";
-import { MarketScrapper } from "./market-scrapper";
+
+import { configuration } from "@configs";
+import { AlertType, Market } from "@enums";
+import { NASDAQIndex } from "@interfaces";
+import { MarketScrapper } from "@services";
+import { toBuddhistYear } from "@utils";
 
 export class Bot {
   private name: string;
