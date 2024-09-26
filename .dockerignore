@@ -6,3 +6,4 @@ Dockerfile
 .gitignore
 .tool-versions
 .vscode
+ci
