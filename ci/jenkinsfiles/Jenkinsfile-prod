@@ -3,7 +3,7 @@ pipeline {
 
   environment {
     VERSION = "1.4.0"
-    IMAGE_URL = "harbor.chatree.dev/chatreejs/discord-market-alert"
+    IMAGE_URL = "chatreejs/discord-market-alert"
   }
 
   stages {
@@ -59,8 +59,8 @@ pipeline {
 
     stage('Push to registry') {
       steps {
-        withCredentials([usernamePassword(credentialsId: 'chatree-docker-registry-credential', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
-          sh 'docker login harbor.chatree.dev -u $USERNAME -p $PASSWORD'
+        withCredentials([usernamePassword(credentialsId: 'docker-hub-credential', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
+          sh 'docker login -u $USERNAME -p $PASSWORD'
           sh 'docker push ${IMAGE_URL}:${BUILD_VERSION}'
         }
       }
