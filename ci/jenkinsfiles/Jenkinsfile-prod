@@ -74,7 +74,7 @@ pipeline {
 
     stage('Deploy to Kubernetes') {
       steps {
-        build job: 'chatreejs/GitOps/discord-market-alert-manifest-prod', parameters: [string(name: 'IMAGE_TAG', value: "${BUILD_VERSION}")]
+        build job: 'Chatree.js/Production/GitOps/discord-market-alert-manifest-prod', parameters: [string(name: 'IMAGE_TAG', value: "${BUILD_VERSION}")]
       }
     }
 
