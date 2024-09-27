@@ -114,20 +114,20 @@ export class MarketScrapper {
         args: ["--no-sandbox", "--disable-setuid-sandbox"],
       });
       const page = await browser.newPage();
-      const url = "https://www.marketwatch.com/investing/index/comp";
+      const url = "https://finance.yahoo.com/quote/%5EIXIC";
       this.logger.debug(`Scraping NASDAQ data from ${url}`);
       await page.goto(url);
 
       let indexElement = await page.waitForXPath(
-        '//*[@id="maincontent"]/div[2]/div[3]/div/div[2]/h2/bg-quote'
+        '//*[@id="nimbus-app"]/section/section/section/article/section[1]/div[2]/div[1]/section/div/section/div[1]/fin-streamer[1]/span'
       );
 
       let changeElement = await page.waitForXPath(
-        '//*[@id="maincontent"]/div[2]/div[3]/div/div[2]/bg-quote/span[1]/bg-quote'
+        '//*[@id="nimbus-app"]/section/section/section/article/section[1]/div[2]/div[1]/section/div/section/div[1]/fin-streamer[2]/span'
       );
 
       let percentChangeElement = await page.waitForXPath(
-        '//*[@id="maincontent"]/div[2]/div[3]/div/div[2]/bg-quote/span[2]/bg-quote'
+        '//*[@id="nimbus-app"]/section/section/section/article/section[1]/div[2]/div[1]/section/div/section/div[1]/fin-streamer[3]/span'
       );
 
       let maxElement = await page.waitForXPath(

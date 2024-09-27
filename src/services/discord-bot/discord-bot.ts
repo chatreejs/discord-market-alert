@@ -1,8 +1,15 @@
-import config from "config";
 import { APIEmbed, EmbedBuilder, WebhookClient } from "discord.js";
 import { Logger, getLogger } from "log4js";
 import moment from "moment-timezone";
 
+import {
+  NASDAQ_BANNER_URL,
+  NASDAQ_ICON_URL,
+  NASDAQ_WEBSITE_URL,
+  SET_BANNER_URL,
+  SET_ICON_URL,
+  SET_WEBSITE_URL,
+} from "@constants";
 import { AlertType, Market } from "@enums";
 import { NASDAQIndex } from "@interfaces";
 import { MarketScrapper } from "@services";
@@ -89,7 +96,7 @@ export class DiscordBot {
     const embed = new EmbedBuilder()
       .setTitle(title)
       .setDescription(`SET Index\n${data.index}\n`)
-      .setURL(config.get("exchange.SET.url"))
+      .setURL(SET_WEBSITE_URL)
       .setColor(0xfbb034)
       .addFields([
         {
@@ -118,8 +125,8 @@ export class DiscordBot {
           inline: true,
         },
       ])
-      .setThumbnail(config.get("exchange.SET.iconUrl"))
-      .setImage(config.get("exchange.SET.bannerUrl"))
+      .setThumbnail(SET_ICON_URL)
+      .setImage(SET_BANNER_URL)
       .setFooter({
         text: `ข้อมูลเมื่อ ${dateString}\nข้อมูลจาก settrade.com\nบอทโดย Chatree.js`,
       });
@@ -146,7 +153,7 @@ export class DiscordBot {
     const embed = new EmbedBuilder()
       .setTitle(title)
       .setDescription(`NASDAQ Composite Index (COMP)\n${data.index}\n`)
-      .setURL(config.get("exchange.NASDAQ.url"))
+      .setURL(NASDAQ_WEBSITE_URL)
       .setColor(0x0679a1)
       .addFields([
         {
@@ -165,8 +172,8 @@ export class DiscordBot {
           inline: true,
         },
       ])
-      .setThumbnail(config.get("exchange.NASDAQ.iconUrl"))
-      .setImage(config.get("exchange.NASDAQ.bannerUrl"))
+      .setThumbnail(NASDAQ_ICON_URL)
+      .setImage(NASDAQ_BANNER_URL)
       .setFooter({
         text: `ข้อมูลเมื่อ ${dateString}\nข้อมูลจาก nasdaq.com\nบอทโดย Chatree.js`,
       });

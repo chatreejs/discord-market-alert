@@ -26,10 +26,8 @@ ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser
 COPY package.json ./
 RUN yarn install --production
 COPY --from=build /app/dist /app
-COPY --from=build /app/config /app/config
 
 RUN addgroup -S webusr && adduser -S -G webusr webusr \
-    && mkdir -p /home/webusr/Downloads /app \
     && chown -R webusr:webusr /home/webusr \
     && chown -R webusr:webusr /app
 

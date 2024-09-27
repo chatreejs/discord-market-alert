@@ -3,7 +3,7 @@ import "module-alias/register";
 import moment from "moment-timezone";
 
 import { Configuration, loadConfiguration } from "@configs";
-import { logBar } from "@constants";
+import { LOG_BAR } from "@constants";
 import { AlertScheduler } from "@services";
 
 import { APP_VERSION } from "./version";
@@ -45,7 +45,7 @@ try {
   logger.debug(`Discord Webhook Token: ${configuration.discordWebhookToken}`);
   logger.debug(`Enabled Market: ${configuration.enableMarket}`);
   logger.info("Configuration loaded successfully");
-  logger.info(logBar);
+  logger.info(LOG_BAR);
 
   // Create Alert Scheduler
   logger.info("Creating Alert Scheduler");

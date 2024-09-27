@@ -1,4 +1,3 @@
-import config from "config";
 import { CronJob } from "cron";
 import { getLogger, Logger } from "log4js";
 
@@ -19,7 +18,7 @@ export class AlertScheduler {
     this.logger.level = configuration.logLevel;
 
     this.discordBot = new DiscordBot(
-      config.get("discordbot.name"),
+      configuration.discordBotName,
       configuration.discordWebhookId,
       configuration.discordWebhookToken,
       configuration.logLevel
@@ -35,7 +34,7 @@ export class AlertScheduler {
           this.createSETSchedule();
           break;
         case Market.NASDAQ:
-          this.logger.warn(`Market ${market} is currently not supported`);
+          this.createNASDAQSchedule();
           break;
         default:
           this.logger.warn(`Market ${market} is not supported`);
@@ -45,10 +44,10 @@ export class AlertScheduler {
 
   private createSETSchedule(): void {
     this.logger.debug(
-      "Configuring SET market open using cron: " +
+      "Configuring SET market open using crontab: " +
         this.configuration.crontabConfig.get(Market.SET).open
     );
-    const marketSETOpenJob = new CronJob(
+    const marketOpenJob = new CronJob(
       this.configuration.crontabConfig.get(Market.SET).open,
       () => {
         this.logger.info("Market SET Open cronjob triggered");
@@ -60,10 +59,10 @@ export class AlertScheduler {
     );
 
     this.logger.debug(
-      "Configuring SET market close using cron: " +
+      "Configuring SET market close using crontab: " +
         this.configuration.crontabConfig.get(Market.SET).close
     );
-    const marketSETCloseJob = new CronJob(
+    const marketCloseJob = new CronJob(
       this.configuration.crontabConfig.get(Market.SET).close,
       () => {
         this.logger.info("Market SET Close cronjob triggered");
@@ -75,8 +74,28 @@ export class AlertScheduler {
     );
 
     this.logger.info("Starting Cron job");
-    marketSETOpenJob.start();
-    marketSETCloseJob.start();
+    marketOpenJob.start();
+    marketCloseJob.start();
+  }
+
+  private createNASDAQSchedule(): void {
+    this.logger.debug(
+      "Configuring NASDAQ market close using crontab: " +
+        this.configuration.crontabConfig.get(Market.NASDAQ).close
+    );
+    const marketCloseJob = new CronJob(
+      this.configuration.crontabConfig.get(Market.NASDAQ).close,
+      () => {
+        this.logger.info("Market NASDAQ Close cronjob triggered");
+        this.sendAlert(Market.NASDAQ, AlertType.MARKET_BRIEFING);
+      },
+      null,
+      true,
+      "Asia/Bangkok"
+    );
+
+    this.logger.info("Starting Cron job");
+    marketCloseJob.start();
   }
 
   private sendAlert = (market: string, alertType: string) => {

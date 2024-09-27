@@ -8,6 +8,7 @@ interface CrontabConfig {
 export interface Configuration {
   botClientId: string;
   logLevel?: string;
+  discordBotName?: string;
   discordWebhookId: string;
   discordWebhookToken: string;
   enableMarket: string[];
@@ -17,6 +18,7 @@ export interface Configuration {
 const configuration: Configuration = {
   botClientId: process.env.BOT_CLIENT_ID,
   logLevel: process.env.LOG_LEVEL || "info",
+  discordBotName: process.env.DISCORD_BOT_NAME || "Market Alert Bot",
   discordWebhookId: process.env.DISCORD_WEBHOOK_ID,
   discordWebhookToken: process.env.DISCORD_WEBHOOK_TOKEN,
   enableMarket: process.env.ENABLE_MARKET
