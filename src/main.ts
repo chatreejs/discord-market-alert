@@ -1,11 +1,19 @@
+import moduleAlias from "module-alias";
+moduleAlias.addAliases({
+  "@configs": `${__dirname}/configs`,
+  "@constants": `${__dirname}/constants`,
+  "@enums": `${__dirname}/enums`,
+  "@interfaces": `${__dirname}/interfaces`,
+  "@services": `${__dirname}/services`,
+  "@utils": `${__dirname}/utils`,
+});
+
 import { configure, getLogger, shutdown } from "log4js";
-import "module-alias/register";
 import moment from "moment-timezone";
 
 import { Configuration, loadConfiguration } from "@configs";
 import { LOG_BAR } from "@constants";
 import { AlertScheduler } from "@services";
-
 import { APP_VERSION } from "./version";
 
 process.on("SIGINT", function () {
