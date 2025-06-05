@@ -6,13 +6,13 @@ import { AlertType, Market } from "@enums";
 import { DiscordBot, TradingDayValidator } from "@services";
 
 export class AlertScheduler {
-  private enabledMarket: string[];
-  private logger: Logger;
+  private readonly enabledMarket: string[];
+  private readonly logger: Logger;
 
-  private discordBot: DiscordBot;
-  private tradingDayValidator: TradingDayValidator;
+  private readonly discordBot: DiscordBot;
+  private readonly tradingDayValidator: TradingDayValidator;
 
-  constructor(private configuration: Configuration) {
+  constructor(private readonly configuration: Configuration) {
     this.enabledMarket = configuration.enableMarket;
     this.logger = getLogger("[AlertScheduler]");
     this.logger.level = configuration.logLevel;
@@ -44,8 +44,9 @@ export class AlertScheduler {
 
   private createSETSchedule(): void {
     this.logger.debug(
-      "Configuring SET market open using crontab: " +
+      `Create job [SET market open] using crontab: ${
         this.configuration.crontabConfig.get(Market.SET).open
+      }`
     );
     const marketOpenJob = new CronJob(
       this.configuration.crontabConfig.get(Market.SET).open,
@@ -59,8 +60,9 @@ export class AlertScheduler {
     );
 
     this.logger.debug(
-      "Configuring SET market close using crontab: " +
+      `Create job [SET market close] using crontab: ${
         this.configuration.crontabConfig.get(Market.SET).close
+      }`
     );
     const marketCloseJob = new CronJob(
       this.configuration.crontabConfig.get(Market.SET).close,
@@ -80,8 +82,9 @@ export class AlertScheduler {
 
   private createNASDAQSchedule(): void {
     this.logger.debug(
-      "Configuring NASDAQ market close using crontab: " +
+      `Create job [NASDAQ market close] using crontab: ${
         this.configuration.crontabConfig.get(Market.NASDAQ).close
+      }`
     );
     const marketCloseJob = new CronJob(
       this.configuration.crontabConfig.get(Market.NASDAQ).close,
@@ -98,12 +101,12 @@ export class AlertScheduler {
     marketCloseJob.start();
   }
 
-  private sendAlert = (market: string, alertType: string) => {
+  private readonly sendAlert = (market: string, alertType: string) => {
     this.tradingDayValidator.checkTradingDay(market).then((isTradingDay) => {
       if (!isTradingDay) {
-        this.logger.info("Today is not trading day. Skip...");
+        this.logger.info("Today is not trading day. Skip");
       } else {
-        this.logger.info("Today is trading day. Sending alert...");
+        this.logger.info("Today is trading day. Sending alert");
         this.discordBot.sendMessage(market, alertType).then(
           () => {
             this.logger.info("Sending message complete");

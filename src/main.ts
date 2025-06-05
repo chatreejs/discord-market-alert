@@ -54,15 +54,15 @@ logger.info(`Version: ${APP_VERSION}`);
 
 let configuration: Configuration;
 try {
-  logger.info("Loading configuration...");
+  logger.info("Loading configuration");
   configuration = loadConfiguration();
   logger.level = configuration.logLevel;
   logger.debug("Configuration:");
-  logger.debug(`BOT Client ID: ${configuration.botClientId}`);
-  logger.debug(`Discord Webhook ID: ${configuration.discordWebhookId}`);
-  logger.debug(`Discord Webhook Token: ${configuration.discordWebhookToken}`);
-  logger.debug(`Enabled Market: ${configuration.enableMarket}`);
-  logger.info("Configuration loaded successfully");
+  logger.debug(`- BOT Client ID: ${configuration.botClientId}`);
+  logger.debug(`- Discord Webhook ID: ${configuration.discordWebhookId}`);
+  logger.debug(`- Discord Webhook Token: ${configuration.discordWebhookToken}`);
+  logger.debug(`- Enabled Market: ${configuration.enableMarket}`);
+  logger.info("Configuration loaded");
   logger.info(LOG_BAR);
 
   // Create Alert Scheduler

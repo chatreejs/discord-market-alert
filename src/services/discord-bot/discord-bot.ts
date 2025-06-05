@@ -96,7 +96,7 @@ export class DiscordBot {
   }
 
   async generateSETIndexEmbed(title: string): Promise<APIEmbed> {
-    this.logger.debug("Retrieving SET Index data...");
+    this.logger.debug("Retrieving SET Index data");
     const data = await this.marketScraper.scrapeSETData();
     const date = new Date();
     const dateString = toBuddhistYear(moment(date).locale("th"), "LLLL");
@@ -147,7 +147,7 @@ export class DiscordBot {
   }
 
   async generateNASDAQIndexEmbed(title: string): Promise<APIEmbed> {
-    this.logger.debug("Retrieving NASDAQ Index data...");
+    this.logger.debug("Retrieving NASDAQ Index data");
     let data: NASDAQIndex;
     try {
       data = await this.marketScraper.scrapeNASDAQData();

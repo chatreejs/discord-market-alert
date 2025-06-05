@@ -4,7 +4,7 @@ import puppeteer from "puppeteer";
 import { NASDAQIndex, SETIndex } from "@interfaces";
 
 export class MarketScrapper {
-  private logger: Logger;
+  private readonly logger: Logger;
 
   constructor(logLevel: string = "info") {
     this.logger = getLogger("[MarketScrapper]");

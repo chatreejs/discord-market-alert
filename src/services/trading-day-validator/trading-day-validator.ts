@@ -6,9 +6,9 @@ import { Configuration } from "@configs";
 import { Market } from "@enums";
 
 export class TradingDayValidator {
-  private logger: Logger;
+  private readonly logger: Logger;
 
-  constructor(private configuration: Configuration) {
+  constructor(private readonly configuration: Configuration) {
     this.logger = getLogger("[TradingDayValidator]");
     this.logger.level = configuration.logLevel;
   }
@@ -17,11 +17,11 @@ export class TradingDayValidator {
     let holidayList = [];
     switch (market) {
       case Market.SET:
-        this.logger.info("Checking SET trading day...");
+        this.logger.info("Checking SET trading day");
         holidayList = await this.loadThaiHolidayDate();
         return this.isSETTradingDay(holidayList);
       case Market.NASDAQ:
-        this.logger.info("Checking NASDAQ trading day...");
+        this.logger.info("Checking NASDAQ trading day");
         holidayList = [];
         return this.isNasdaqTradingDay(holidayList);
       default:
