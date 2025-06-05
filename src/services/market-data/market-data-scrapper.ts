@@ -97,71 +97,8 @@ export class MarketDataScrapper extends MarketData {
   }
 
   async getNASDAQIndexMarketData(): Promise<NASDAQIndex> {
-    try {
-      const browser = await puppeteer.launch({
-        headless: "new",
-        args: ["--no-sandbox", "--disable-setuid-sandbox"],
-      });
-      const page = await browser.newPage();
-      const url = "https://finance.yahoo.com/quote/%5EIXIC";
-      this.logger.debug(`Scraping NASDAQ data from ${url}`);
-      await page.goto(url);
-
-      let indexElement = await page.waitForXPath(
-        '//*[@id="nimbus-app"]/section/section/section/article/section[1]/div[2]/div[1]/section/div/section/div[1]/fin-streamer[1]/span'
-      );
-
-      let changeElement = await page.waitForXPath(
-        '//*[@id="nimbus-app"]/section/section/section/article/section[1]/div[2]/div[1]/section/div/section/div[1]/fin-streamer[2]/span'
-      );
-
-      let percentChangeElement = await page.waitForXPath(
-        '//*[@id="nimbus-app"]/section/section/section/article/section[1]/div[2]/div[1]/section/div/section/div[1]/fin-streamer[3]/span'
-      );
-
-      let maxElement = await page.waitForXPath(
-        '//*[@id="maincontent"]/div[2]/div[5]/mw-rangebar[1]/div[1]/span[3]'
-      );
-
-      let minElement = await page.waitForXPath(
-        '//*[@id="maincontent"]/div[2]/div[5]/mw-rangebar[1]/div[1]/span[1]'
-      );
-
-      let index = await page.evaluate(
-        (element) => element.textContent,
-        indexElement
-      );
-      let change = await page.evaluate(
-        (element) => element.textContent,
-        changeElement
-      );
-      let percentChange = await page.evaluate(
-        (element) => element.textContent,
-        percentChangeElement
-      );
-      let max = await page.evaluate(
-        (element) => element.textContent,
-        maxElement
-      );
-      let min = await page.evaluate(
-        (element) => element.textContent,
-        minElement
-      );
-
-      let data: NASDAQIndex = {
-        index: index.trim(),
-        change: change.trim(),
-        percentChange: percentChange.trim(),
-        max: max.trim(),
-        min: min.trim(),
-      };
-
-      browser.close();
-      this.logger.debug("Scraping NASDAQ data completed.");
-      return data;
-    } catch (error) {
-      this.logger.error(error.message);
-      throw error;
-    }
+    throw new Error(
+      "Method not implemented. Use MarketDataApi to fetch NASDAQ index data."
+    );
   }
 }

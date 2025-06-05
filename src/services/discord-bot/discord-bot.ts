@@ -12,14 +12,15 @@ import {
 } from "@constants";
 import { AlertType, Market } from "@enums";
 import { NASDAQIndex } from "@interfaces";
-import { MarketData, MarketDataScrapper } from "@services";
+import { MarketData, MarketDataApi, MarketDataScrapper } from "@services";
 import { currencyFormat, toBuddhistYear } from "@utils";
 
 export class DiscordBot {
   private readonly name: string;
   private readonly webhookId: string[];
   private readonly webhookToken: string[];
-  private readonly marketData: MarketData;
+  private readonly marketDataScrapper: MarketData;
+  private readonly marketDataApi: MarketDataApi;
   private readonly logger: Logger;
 
   constructor(
@@ -31,7 +32,8 @@ export class DiscordBot {
     this.name = name;
     this.webhookId = webhookId;
     this.webhookToken = webhookToken;
-    this.marketData = new MarketDataScrapper(logLevel);
+    this.marketDataScrapper = new MarketDataScrapper(logLevel);
+    this.marketDataApi = new MarketDataApi(logLevel);
     this.logger = getLogger("[DiscordBot]");
     this.logger.level = logLevel;
   }
@@ -97,7 +99,7 @@ export class DiscordBot {
 
   async generateSETIndexEmbed(title: string): Promise<APIEmbed> {
     this.logger.debug("Retrieving SET Index data");
-    const data = await this.marketData.getSETIndexMarketData();
+    const data = await this.marketDataScrapper.getSETIndexMarketData();
     const date = new Date();
     const dateString = toBuddhistYear(moment(date).locale("th"), "LLLL");
     this.logger.debug("Generating SET Index embed...");
@@ -158,7 +160,7 @@ export class DiscordBot {
     this.logger.debug("Retrieving NASDAQ Index data");
     let data: NASDAQIndex;
     try {
-      data = await this.marketData.getNASDAQIndexMarketData();
+      data = await this.marketDataApi.getNASDAQIndexMarketData();
     } catch (error) {
       this.logger.error("Error retrieving NASDAQ data.");
       throw error;
@@ -179,12 +181,12 @@ export class DiscordBot {
         },
         {
           name: ":green_square: สูงสุด",
-          value: data.max,
+          value: data.high,
           inline: true,
         },
         {
           name: ":red_square: ต่ำสุด",
-          value: data.min,
+          value: data.low,
           inline: true,
         },
       ])

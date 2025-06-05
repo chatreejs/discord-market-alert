@@ -7,4 +7,5 @@ export const SET_BANNER_URL =
 export const NASDAQ_WEBSITE_URL = "https://www.nasdaq.com";
 export const NASDAQ_ICON_URL =
   "https://logowik.com/content/uploads/images/nasdaq1512.jpg";
-export const NASDAQ_BANNER_URL = "https://wallpapercave.com/wp/wp6959409.jpg";
+export const NASDAQ_BANNER_URL =
+  "https://fxopen.com/blog/en/content/images/2023/08/nasdaq100.jpg";
