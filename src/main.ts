@@ -9,7 +9,6 @@ moduleAlias.addAliases({
 });
 
 import { configure, getLogger, shutdown } from "log4js";
-import moment from "moment-timezone";
 
 import { Configuration, loadConfiguration } from "@configs";
 import { LOG_BAR } from "@constants";
@@ -24,14 +23,25 @@ process.on("SIGINT", function () {
 });
 
 const configLogger = () => {
-  const fileName = moment().format("YYYY-MM-DD");
   configure({
     appenders: {
       console: { type: "console" },
-      file: { type: "file", filename: `logs/${fileName}.log` },
+      file: { type: "file", filename: `logs/discord-market-alert.log` },
+      errorFile: {
+        type: "file",
+        filename: `logs/discord-market-alert-error.log`,
+      },
+      filterError: {
+        type: "logLevelFilter",
+        appender: "errorFile",
+        level: "error",
+      },
     },
     categories: {
-      default: { appenders: ["console", "file"], level: "debug" },
+      default: {
+        appenders: ["console", "file", "filterError"],
+        level: "debug",
+      },
     },
   });
 };
