@@ -1,17 +1,14 @@
-import { Logger, getLogger } from "log4js";
 import puppeteer from "puppeteer";
 
 import { NASDAQIndex, SETIndex } from "@interfaces";
+import { MarketData } from "./market-data";
 
-export class MarketScrapper {
-  private readonly logger: Logger;
-
+export class MarketDataScrapper extends MarketData {
   constructor(logLevel: string = "info") {
-    this.logger = getLogger("[MarketScrapper]");
-    this.logger.level = logLevel;
+    super("[MarketDataScrapper]", logLevel);
   }
 
-  async scrapeSETData(): Promise<SETIndex> {
+  async getSETIndexMarketData(): Promise<SETIndex> {
     try {
       const browser = await puppeteer.launch({
         headless: "new",
@@ -34,11 +31,11 @@ export class MarketScrapper {
         '//*[@id="index-set-stock-detail-tab-pane-1"]/div/div[1]/div[1]/div[1]/div[2]/div/div/div[2]/div[2]/span[2]'
       );
 
-      let maxElement = await page.waitForXPath(
+      let highElement = await page.waitForXPath(
         '//*[@id="index-set-stock-detail-tab-pane-1"]/div/div[1]/div[1]/div[2]/div[1]/div[1]/span'
       );
 
-      let minElement = await page.waitForXPath(
+      let lowElement = await page.waitForXPath(
         '//*[@id="index-set-stock-detail-tab-pane-1"]/div/div[1]/div[1]/div[2]/div[2]/div[1]/span'
       );
 
@@ -50,51 +47,43 @@ export class MarketScrapper {
         '//*[@id="index-set-stock-detail-tab-pane-1"]/div/div[1]/div[1]/div[2]/div[2]/div[2]/span'
       );
 
-      let index = await page.evaluate(
-        (element) => element.textContent,
-        indexElement
-      );
-      let change = await page.evaluate(
-        (element) => element.textContent,
-        changeElement
-      );
-
-      let percentChange = await page.evaluate(
-        (element) => element.textContent,
-        percentChangeElement
-      );
-      let max = await page.evaluate(
-        (element) => element.textContent,
-        maxElement
-      );
-      let min = await page.evaluate(
-        (element) => element.textContent,
-        minElement
-      );
-      let value = await page.evaluate(
-        (element) => element.textContent,
-        valueElement
-      );
-      let volume = await page.evaluate(
-        (element) => element.textContent,
-        volumeElement
-      );
+      let index = await page
+        .evaluate((element) => element.textContent, indexElement)
+        .then((text) => +text.trim().replace(/,/g, ""));
+      let change = await page
+        .evaluate((element) => element.textContent, changeElement)
+        .then((text) => +text.trim().replace(/,/g, ""));
+      let percentChange = await page
+        .evaluate((element) => element.textContent, percentChangeElement)
+        .then((text) => +text.trim().replace(/[+%()]/g, ""));
+      let high = await page
+        .evaluate((element) => element.textContent, highElement)
+        .then((text) => +text.trim().replace(/,/g, ""));
+      let low = await page
+        .evaluate((element) => element.textContent, lowElement)
+        .then((text) => +text.trim().replace(/,/g, ""));
+      let value = await page
+        .evaluate((element) => element.textContent, valueElement)
+        .then((text) => +text.trim().replace(/,/g, ""));
+      let volume = await page
+        .evaluate((element) => element.textContent, volumeElement)
+        .then((text) => +text.trim().replace(/,/g, ""));
 
       let data: SETIndex = {
-        index: index.trim(),
-        change: change.trim(),
-        percentChange: percentChange.trim(),
-        max: max.trim(),
-        min: min.trim(),
-        volume: volume.trim(),
-        value: value.trim(),
+        index: index,
+        change: change,
+        percentChange: percentChange,
+        high: high,
+        low: low,
+        volume: volume,
+        value: value,
       };
 
       this.logger.debug(`index: ${data.index}`);
       this.logger.debug(`change: ${data.change}`);
       this.logger.debug(`percentChange: ${data.percentChange}`);
-      this.logger.debug(`max: ${data.max}`);
-      this.logger.debug(`min: ${data.min}`);
+      this.logger.debug(`high: ${data.high}`);
+      this.logger.debug(`low: ${data.low}`);
       this.logger.debug(`volume: ${data.volume}`);
       this.logger.debug(`value: ${data.value}`);
 
@@ -107,7 +96,7 @@ export class MarketScrapper {
     }
   }
 
-  async scrapeNASDAQData(): Promise<NASDAQIndex> {
+  async getNASDAQIndexMarketData(): Promise<NASDAQIndex> {
     try {
       const browser = await puppeteer.launch({
         headless: "new",

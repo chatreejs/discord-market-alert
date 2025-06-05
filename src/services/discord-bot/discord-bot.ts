@@ -12,14 +12,14 @@ import {
 } from "@constants";
 import { AlertType, Market } from "@enums";
 import { NASDAQIndex } from "@interfaces";
-import { MarketScrapper } from "@services";
-import { toBuddhistYear } from "@utils";
+import { MarketData, MarketDataScrapper } from "@services";
+import { currencyFormat, toBuddhistYear } from "@utils";
 
 export class DiscordBot {
   private readonly name: string;
   private readonly webhookId: string[];
   private readonly webhookToken: string[];
-  private readonly marketScraper: MarketScrapper;
+  private readonly marketData: MarketData;
   private readonly logger: Logger;
 
   constructor(
@@ -31,7 +31,7 @@ export class DiscordBot {
     this.name = name;
     this.webhookId = webhookId;
     this.webhookToken = webhookToken;
-    this.marketScraper = new MarketScrapper(logLevel);
+    this.marketData = new MarketDataScrapper(logLevel);
     this.logger = getLogger("[DiscordBot]");
     this.logger.level = logLevel;
   }
@@ -80,7 +80,7 @@ export class DiscordBot {
     }
 
     this.logger.info(`Sending message to Discord`);
-
+    this.logger.debug(`embeds: ${JSON.stringify(embeds)}`);
     this.webhookId.forEach((id, index) => {
       let webhookClient = new WebhookClient({
         id: id,
@@ -97,39 +97,47 @@ export class DiscordBot {
 
   async generateSETIndexEmbed(title: string): Promise<APIEmbed> {
     this.logger.debug("Retrieving SET Index data");
-    const data = await this.marketScraper.scrapeSETData();
+    const data = await this.marketData.getSETIndexMarketData();
     const date = new Date();
     const dateString = toBuddhistYear(moment(date).locale("th"), "LLLL");
     this.logger.debug("Generating SET Index embed...");
     const embed = new EmbedBuilder()
       .setTitle(title)
-      .setDescription(`SET Index\n${data.index}\n`)
+      .setDescription(`SET Index\n${currencyFormat(data.index)}\n`)
       .setURL(SET_WEBSITE_URL)
       .setColor(0xfbb034)
       .addFields([
         {
           name: ":chart_with_upwards_trend: เปลี่ยนแปลง",
-          value: `${data.change} ${data.percentChange}`,
+          value:
+            (data.change > 0
+              ? "+" + currencyFormat(data.change)
+              : currencyFormat(data.change)) +
+            ` (${
+              data.percentChange > 0
+                ? "+" + currencyFormat(data.percentChange)
+                : currencyFormat(data.percentChange)
+            }%)`,
           inline: true,
         },
         {
           name: ":green_square: สูงสุด",
-          value: data.max,
+          value: currencyFormat(data.high),
           inline: true,
         },
         {
           name: ":red_square: ต่ำสุด",
-          value: data.min,
+          value: currencyFormat(data.low),
           inline: true,
         },
         {
           name: ":coin: ปริมาณ ('000 หุ้น)",
-          value: data.volume,
+          value: currencyFormat(data.volume),
           inline: true,
         },
         {
           name: ":dollar: มูลค่า (ล้านบาท)",
-          value: data.value,
+          value: currencyFormat(data.value),
           inline: true,
         },
       ])
@@ -150,7 +158,7 @@ export class DiscordBot {
     this.logger.debug("Retrieving NASDAQ Index data");
     let data: NASDAQIndex;
     try {
-      data = await this.marketScraper.scrapeNASDAQData();
+      data = await this.marketData.getNASDAQIndexMarketData();
     } catch (error) {
       this.logger.error("Error retrieving NASDAQ data.");
       throw error;

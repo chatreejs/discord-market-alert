@@ -68,6 +68,8 @@ try {
   logger.info("Running Alert Scheduler");
   const scheduler = new AlertScheduler(configuration);
   scheduler.start();
+  logger.info(LOG_BAR);
+  logger.info("All tasks started. Waiting for trigger.");
 } catch (error: any) {
   logger.error(error.message);
   shutdown(() => {
