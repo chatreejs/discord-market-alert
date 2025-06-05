@@ -65,10 +65,9 @@ try {
   logger.info("Configuration loaded");
   logger.info(LOG_BAR);
 
-  // Create Alert Scheduler
-  logger.info("Creating Alert Scheduler");
+  logger.info("Running Alert Scheduler");
   const scheduler = new AlertScheduler(configuration);
-  scheduler.create();
+  scheduler.start();
 } catch (error: any) {
   logger.error(error.message);
   shutdown(() => {

@@ -26,15 +26,17 @@ export class AlertScheduler {
     this.tradingDayValidator = new TradingDayValidator(configuration);
   }
 
-  create(): void {
+  start(): void {
     this.enabledMarket.forEach((market) => {
-      this.logger.info(`Creating schedule for market: ${market}`);
+      this.logger.info(`Creating job for market: ${market}`);
       switch (market) {
         case Market.SET:
-          this.createSETSchedule();
+          this.createSETJob();
+          this.logger.info("[SET] job created");
           break;
         case Market.NASDAQ:
-          this.createNASDAQSchedule();
+          this.createNASDAQJob();
+          this.logger.info("[NASDAQ] job created");
           break;
         default:
           this.logger.warn(`Market ${market} is not supported`);
@@ -42,16 +44,16 @@ export class AlertScheduler {
     });
   }
 
-  private createSETSchedule(): void {
+  private createSETJob(): void {
     this.logger.debug(
-      `Create job [SET market open] using crontab: ${
+      `Create cronjob [SET market open] using crontab: ${
         this.configuration.crontabConfig.get(Market.SET).open
       }`
     );
     const marketOpenJob = new CronJob(
       this.configuration.crontabConfig.get(Market.SET).open,
       () => {
-        this.logger.info("Market SET Open cronjob triggered");
+        this.logger.info("Market SET Open cronjob triggered!!");
         this.sendAlert(Market.SET, AlertType.MARKET_OPEN);
       },
       null,
@@ -60,14 +62,14 @@ export class AlertScheduler {
     );
 
     this.logger.debug(
-      `Create job [SET market close] using crontab: ${
+      `Create cronjob [SET market close] using crontab: ${
         this.configuration.crontabConfig.get(Market.SET).close
       }`
     );
     const marketCloseJob = new CronJob(
       this.configuration.crontabConfig.get(Market.SET).close,
       () => {
-        this.logger.info("Market SET Close cronjob triggered");
+        this.logger.info("Market SET Close cronjob triggered!!");
         this.sendAlert(Market.SET, AlertType.MARKET_BRIEFING);
       },
       null,
@@ -75,21 +77,20 @@ export class AlertScheduler {
       "Asia/Bangkok"
     );
 
-    this.logger.info("Starting Cron job");
     marketOpenJob.start();
     marketCloseJob.start();
   }
 
-  private createNASDAQSchedule(): void {
+  private createNASDAQJob(): void {
     this.logger.debug(
-      `Create job [NASDAQ market close] using crontab: ${
+      `Create cronjob [NASDAQ market close] using crontab: ${
         this.configuration.crontabConfig.get(Market.NASDAQ).close
       }`
     );
     const marketCloseJob = new CronJob(
       this.configuration.crontabConfig.get(Market.NASDAQ).close,
       () => {
-        this.logger.info("Market NASDAQ Close cronjob triggered");
+        this.logger.info("Market NASDAQ Close cronjob triggered!!");
         this.sendAlert(Market.NASDAQ, AlertType.MARKET_BRIEFING);
       },
       null,
@@ -97,7 +98,6 @@ export class AlertScheduler {
       "Asia/Bangkok"
     );
 
-    this.logger.info("Starting Cron job");
     marketCloseJob.start();
   }
 

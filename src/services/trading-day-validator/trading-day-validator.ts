@@ -14,7 +14,7 @@ export class TradingDayValidator {
   }
 
   async checkTradingDay(market: string): Promise<boolean> {
-    let holidayList = [];
+    let holidayList: string[] = [];
     switch (market) {
       case Market.SET:
         this.logger.info("Checking SET trading day");
