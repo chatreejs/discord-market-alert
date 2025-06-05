@@ -16,22 +16,21 @@ import { MarketScrapper } from "@services";
 import { toBuddhistYear } from "@utils";
 
 export class DiscordBot {
-  private name: string;
-  private webhookClient: WebhookClient;
-  private marketScraper: MarketScrapper;
-  private logger: Logger;
+  private readonly name: string;
+  private readonly webhookId: string[];
+  private readonly webhookToken: string[];
+  private readonly marketScraper: MarketScrapper;
+  private readonly logger: Logger;
 
   constructor(
     name: string,
-    webhookId: string,
-    webhookToken: string,
+    webhookId: string[],
+    webhookToken: string[],
     logLevel: string = "info"
   ) {
     this.name = name;
-    this.webhookClient = new WebhookClient({
-      id: webhookId,
-      token: webhookToken,
-    });
+    this.webhookId = webhookId;
+    this.webhookToken = webhookToken;
     this.marketScraper = new MarketScrapper(logLevel);
     this.logger = getLogger("[DiscordBot]");
     this.logger.level = logLevel;
@@ -80,10 +79,19 @@ export class DiscordBot {
       return;
     }
 
-    this.logger.info(`Sending message to Discord...`);
-    this.webhookClient.send({
-      username: this.name,
-      embeds,
+    this.logger.info(`Sending message to Discord`);
+
+    this.webhookId.forEach((id, index) => {
+      let webhookClient = new WebhookClient({
+        id: id,
+        token: this.webhookToken[index],
+      });
+
+      this.logger.debug(`webhook id:${id}, token:${this.webhookToken[index]}`);
+      webhookClient.send({
+        username: this.name,
+        embeds,
+      });
     });
   }
 

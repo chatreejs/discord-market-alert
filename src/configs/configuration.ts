@@ -9,8 +9,8 @@ export interface Configuration {
   botClientId: string;
   logLevel?: string;
   discordBotName?: string;
-  discordWebhookId: string;
-  discordWebhookToken: string;
+  discordWebhookId: string[];
+  discordWebhookToken: string[];
   enableMarket: string[];
   crontabConfig: Map<Market, CrontabConfig>;
 }
@@ -19,8 +19,8 @@ const configuration: Configuration = {
   botClientId: process.env.BOT_CLIENT_ID,
   logLevel: process.env.LOG_LEVEL || "info",
   discordBotName: process.env.DISCORD_BOT_NAME || "Market Alert Bot",
-  discordWebhookId: process.env.DISCORD_WEBHOOK_ID,
-  discordWebhookToken: process.env.DISCORD_WEBHOOK_TOKEN,
+  discordWebhookId: process.env.DISCORD_WEBHOOK_ID.split(","),
+  discordWebhookToken: process.env.DISCORD_WEBHOOK_TOKEN.split(","),
   enableMarket: process.env.ENABLE_MARKET
     ? process.env.ENABLE_MARKET.split(",")
     : [],
