@@ -177,17 +177,25 @@ export class DiscordBot {
       .addFields([
         {
           name: ":chart_with_upwards_trend: เปลี่ยนแปลง",
-          value: `${data.change} ${data.percentChange}`,
+          value:
+            (data.change > 0
+              ? "+" + currencyFormat(data.change)
+              : currencyFormat(data.change)) +
+            ` (${
+              data.percentChange > 0
+                ? "+" + currencyFormat(data.percentChange)
+                : currencyFormat(data.percentChange)
+            }%)`,
           inline: true,
         },
         {
           name: ":green_square: สูงสุด",
-          value: data.high,
+          value: currencyFormat(data.high),
           inline: true,
         },
         {
           name: ":red_square: ต่ำสุด",
-          value: data.low,
+          value: currencyFormat(data.low),
           inline: true,
         },
       ])

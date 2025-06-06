@@ -1,9 +1,9 @@
 export interface NASDAQIndex {
-  index: string;
-  change: string;
-  percentChange: string;
-  high: string;
-  low: string;
+  index: number;
+  change: number;
+  percentChange: number;
+  high: number;
+  low: number;
 }
 
 export interface NASDAQIndexResponse {

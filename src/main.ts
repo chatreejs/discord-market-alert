@@ -59,6 +59,7 @@ try {
   logger.level = configuration.logLevel;
   logger.debug("Configuration:");
   logger.debug(`- BOT Client ID: ${configuration.botClientId}`);
+  logger.debug(`- Discord Bot Name: ${configuration.discordBotName}`);
   logger.debug(`- Discord Webhook ID: ${configuration.discordWebhookId}`);
   logger.debug(`- Discord Webhook Token: ${configuration.discordWebhookToken}`);
   logger.debug(`- Enabled Market: ${configuration.enableMarket}`);

@@ -30,11 +30,14 @@ export class MarketDataApi extends MarketData {
       if (response.status === 200) {
         const data = response.data.data;
         const indexData: NASDAQIndex = {
-          index: data.primaryData.lastSalePrice,
-          change: data.primaryData.netChange,
-          percentChange: data.primaryData.percentageChange,
-          high: data.keyStats.dayrange.value.split(" - ")[1],
-          low: data.keyStats.dayrange.value.split(" - ")[0],
+          index: +data.primaryData.lastSalePrice.replace(/,/g, ""),
+          change: +data.primaryData.netChange.replace(/,/g, ""),
+          percentChange: +data.primaryData.percentageChange.replace(
+            /[+%()]/g,
+            ""
+          ),
+          high: +data.keyStats.dayrange.value.split(" - ")[1].replace(/,/g, ""),
+          low: +data.keyStats.dayrange.value.split(" - ")[0].replace(/,/g, ""),
         };
 
         this.logger.debug(`index: ${indexData.index}`);
