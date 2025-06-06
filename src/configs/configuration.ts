@@ -47,7 +47,7 @@ export function loadConfiguration(): Configuration {
     config.crontabConfig.set(market as Market, {
       open: process.env[`MARKET_${market}_OPEN_CRON`],
       close: process.env[`MARKET_${market}_CLOSE_CRON`],
-      timezone: process.env[`MARKET_${market}_TZ`],
+      timezone: process.env[`MARKET_${market}_CRON_TZ`],
     });
   });
   const errors = validateConfiguration(config);
