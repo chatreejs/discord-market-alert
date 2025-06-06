@@ -1,11 +1,12 @@
 import puppeteer from "puppeteer";
 
+import { Configuration } from "@configs";
 import { NASDAQIndex, SETIndex } from "@interfaces";
 import { MarketData } from "./market-data";
 
 export class MarketDataScrapper extends MarketData {
-  constructor(logLevel: string = "info") {
-    super("[MarketDataScrapper]", logLevel);
+  constructor(protected readonly configuration: Configuration) {
+    super(configuration, "[MarketDataScrapper]");
   }
 
   async getSETIndexMarketData(): Promise<SETIndex> {

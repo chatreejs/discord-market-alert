@@ -2,6 +2,7 @@ import { APIEmbed, EmbedBuilder, WebhookClient } from "discord.js";
 import { Logger, getLogger } from "log4js";
 import moment from "moment-timezone";
 
+import { Configuration } from "@configs";
 import {
   NASDAQ_BANNER_URL,
   NASDAQ_ICON_URL,
@@ -27,15 +28,15 @@ export class DiscordBot {
     name: string,
     webhookId: string[],
     webhookToken: string[],
-    logLevel: string = "info"
+    configuration: Configuration
   ) {
     this.name = name;
     this.webhookId = webhookId;
     this.webhookToken = webhookToken;
-    this.marketDataScrapper = new MarketDataScrapper(logLevel);
-    this.marketDataApi = new MarketDataApi(logLevel);
+    this.marketDataScrapper = new MarketDataScrapper(configuration);
+    this.marketDataApi = new MarketDataApi(configuration);
     this.logger = getLogger("[DiscordBot]");
-    this.logger.level = logLevel;
+    this.logger.level = configuration.logLevel;
   }
 
   async sendMessage(market: string, alertType: string): Promise<void> {

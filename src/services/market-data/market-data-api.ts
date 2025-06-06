@@ -1,11 +1,12 @@
 import axios from "axios";
 
+import { Configuration } from "@configs";
 import { NASDAQIndex, NASDAQIndexResponse, SETIndex } from "@interfaces";
 import { MarketData } from "./market-data";
 
 export class MarketDataApi extends MarketData {
-  constructor(logLevel: string = "info") {
-    super("[MarketDataApi]", logLevel);
+  constructor(protected readonly configuration: Configuration) {
+    super(configuration, "[MarketDataApi]");
   }
 
   async getSETIndexMarketData(): Promise<SETIndex> {
