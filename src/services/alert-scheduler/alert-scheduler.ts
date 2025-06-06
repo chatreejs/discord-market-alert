@@ -21,7 +21,7 @@ export class AlertScheduler {
       configuration.discordBotName,
       configuration.discordWebhookId,
       configuration.discordWebhookToken,
-      configuration.logLevel
+      configuration
     );
     this.tradingDayValidator = new TradingDayValidator(configuration);
   }
@@ -48,7 +48,7 @@ export class AlertScheduler {
     this.logger.debug(
       `Create cronjob [SET market open] using crontab: ${
         this.configuration.crontabConfig.get(Market.SET).open
-      }`
+      }, timezone: ${this.configuration.crontabConfig.get(Market.SET).timezone}`
     );
     const marketOpenJob = new CronJob(
       this.configuration.crontabConfig.get(Market.SET).open,
@@ -58,13 +58,13 @@ export class AlertScheduler {
       },
       null,
       true,
-      "Asia/Bangkok"
+      this.configuration.crontabConfig.get(Market.SET).timezone
     );
 
     this.logger.debug(
       `Create cronjob [SET market close] using crontab: ${
         this.configuration.crontabConfig.get(Market.SET).close
-      }`
+      }, timezone: ${this.configuration.crontabConfig.get(Market.SET).timezone}`
     );
     const marketCloseJob = new CronJob(
       this.configuration.crontabConfig.get(Market.SET).close,
@@ -74,7 +74,7 @@ export class AlertScheduler {
       },
       null,
       true,
-      "Asia/Bangkok"
+      this.configuration.crontabConfig.get(Market.SET).timezone
     );
 
     marketOpenJob.start();
@@ -85,6 +85,8 @@ export class AlertScheduler {
     this.logger.debug(
       `Create cronjob [NASDAQ market close] using crontab: ${
         this.configuration.crontabConfig.get(Market.NASDAQ).close
+      }, timezone: ${
+        this.configuration.crontabConfig.get(Market.NASDAQ).timezone
       }`
     );
     const marketCloseJob = new CronJob(
@@ -95,7 +97,7 @@ export class AlertScheduler {
       },
       null,
       true,
-      "Asia/Bangkok"
+      this.configuration.crontabConfig.get(Market.NASDAQ).timezone
     );
 
     marketCloseJob.start();

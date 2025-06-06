@@ -3,11 +3,12 @@ import { Market } from "@enums";
 interface CrontabConfig {
   open: string;
   close: string;
+  timezone: string;
 }
 
 export interface Configuration {
-  botClientId: string;
   logLevel?: string;
+  botClientId: string;
   discordBotName?: string;
   discordWebhookId: string[];
   discordWebhookToken: string[];
@@ -16,8 +17,8 @@ export interface Configuration {
 }
 
 const configuration: Configuration = {
-  botClientId: process.env.BOT_CLIENT_ID,
   logLevel: process.env.LOG_LEVEL || "info",
+  botClientId: process.env.BOT_CLIENT_ID,
   discordBotName: process.env.DISCORD_BOT_NAME || "Market Alert Bot",
   discordWebhookId: process.env.DISCORD_WEBHOOK_ID.split(","),
   discordWebhookToken: process.env.DISCORD_WEBHOOK_TOKEN.split(","),
@@ -46,6 +47,7 @@ export function loadConfiguration(): Configuration {
     config.crontabConfig.set(market as Market, {
       open: process.env[`MARKET_${market}_OPEN_CRON`],
       close: process.env[`MARKET_${market}_CLOSE_CRON`],
+      timezone: process.env[`MARKET_${market}_TZ`],
     });
   });
   const errors = validateConfiguration(config);
