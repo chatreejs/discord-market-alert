@@ -83,6 +83,24 @@ export class AlertScheduler {
 
   private createNASDAQJob(): void {
     this.logger.debug(
+      `Create cronjob [NASDAQ market open] using crontab: ${
+        this.configuration.crontabConfig.get(Market.NASDAQ).open
+      }, timezone: ${
+        this.configuration.crontabConfig.get(Market.NASDAQ).timezone
+      }`
+    );
+    const marketOpenJob = new CronJob(
+      this.configuration.crontabConfig.get(Market.NASDAQ).open,
+      () => {
+        this.logger.info("Market NASDAQ Open cronjob triggered!!");
+        this.sendAlert(Market.NASDAQ, AlertType.MARKET_OPEN);
+      },
+      null,
+      true,
+      this.configuration.crontabConfig.get(Market.NASDAQ).timezone
+    );
+
+    this.logger.debug(
       `Create cronjob [NASDAQ market close] using crontab: ${
         this.configuration.crontabConfig.get(Market.NASDAQ).close
       }, timezone: ${
@@ -100,6 +118,7 @@ export class AlertScheduler {
       this.configuration.crontabConfig.get(Market.NASDAQ).timezone
     );
 
+    marketOpenJob.start();
     marketCloseJob.start();
   }
 

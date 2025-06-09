@@ -68,7 +68,7 @@ export class DiscordBot {
         } else if (alertType === AlertType.MARKET_BRIEFING) {
           embeds.push(
             await this.generateNASDAQIndexEmbed(
-              "สรุปภาวะ NASDAQ Composite Index"
+              "สรุปภาพรวม NASDAQ Composite Index"
             )
           );
         }
