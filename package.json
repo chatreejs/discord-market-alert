@@ -4,7 +4,7 @@
   "description": "Stock Market Alert using Discord Webhooks",
   "repository": {
     "type": "git",
-    "url": "https://github.com/chatreejs/stock-discord-noti.git"
+    "url": "https://github.com/chatreejs/discord-market-alert.git"
   },
   "keywords": [
     "discord",
