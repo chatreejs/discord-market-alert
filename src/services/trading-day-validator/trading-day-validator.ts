@@ -48,12 +48,12 @@ export class TradingDayValidator {
   private async loadThaiHolidayDate(): Promise<string[]> {
     const date = moment().tz("Asia/Bangkok");
     const year = date.year();
-    const url = `https://apigw1.bot.or.th/bot/public/financial-institutions-holidays`;
+    const url = `https://gateway.api.bot.or.th/financial-institutions-holidays/`;
     this.logger.debug(`Call Thai holiday API from ${url}`);
 
     const response = await axios.get(url, {
       headers: {
-        "x-ibm-client-id": this.configuration.botClientId,
+        Authorization: this.configuration.botApiToken,
         accept: "application/json",
       },
       params: {

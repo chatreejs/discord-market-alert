@@ -58,7 +58,7 @@ try {
   configuration = loadConfiguration();
   logger.level = configuration.logLevel;
   logger.debug("Configuration:");
-  logger.debug(`- BOT Client ID: ${configuration.botClientId}`);
+  logger.debug(`- BOT API Token: ${configuration.botApiToken}`);
   logger.debug(`- Discord Bot Name: ${configuration.discordBotName}`);
   logger.debug(`- Discord Webhook ID: ${configuration.discordWebhookId}`);
   logger.debug(`- Discord Webhook Token: ${configuration.discordWebhookToken}`);
