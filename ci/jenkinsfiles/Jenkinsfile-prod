@@ -2,7 +2,7 @@ pipeline {
   agent any
 
   environment {
-    VERSION = "1.7.0"
+    VERSION = "1.8.0"
     IMAGE_URL = "chatreejs/discord-market-alert"
   }
 
