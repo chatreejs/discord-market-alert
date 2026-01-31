@@ -3,6 +3,7 @@ import axios from "axios";
 import { Configuration } from "@configs";
 import { NASDAQIndex, NASDAQIndexResponse, SETIndex } from "@interfaces";
 import { MarketData } from "./market-data";
+import { MarketDataScraper } from "./market-data-scraper";
 
 export class MarketDataApi extends MarketData {
   constructor(protected readonly configuration: Configuration) {
@@ -11,7 +12,7 @@ export class MarketDataApi extends MarketData {
 
   async getSETIndexMarketData(): Promise<SETIndex> {
     throw new Error(
-      "Method not implemented. Use MarketDataScrapper to fetch SET index data."
+      `Method not implemented. Use ${MarketDataScraper.name} to fetch SET index data.`,
     );
   }
 
@@ -34,7 +35,7 @@ export class MarketDataApi extends MarketData {
           change: +data.primaryData.netChange.replace(/,/g, ""),
           percentChange: +data.primaryData.percentageChange.replace(
             /[+%()]/g,
-            ""
+            "",
           ),
           high: +data.keyStats.dayrange.value.split(" - ")[1].replace(/,/g, ""),
           low: +data.keyStats.dayrange.value.split(" - ")[0].replace(/,/g, ""),

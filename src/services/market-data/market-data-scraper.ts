@@ -3,10 +3,11 @@ import puppeteer from "puppeteer";
 import { Configuration } from "@configs";
 import { NASDAQIndex, SETIndex } from "@interfaces";
 import { MarketData } from "./market-data";
+import { MarketDataApi } from "./market-data-api";
 
-export class MarketDataScrapper extends MarketData {
+export class MarketDataScraper extends MarketData {
   constructor(protected readonly configuration: Configuration) {
-    super(configuration, "[MarketDataScrapper]");
+    super(configuration, "[MarketDataScraper]");
   }
 
   async getSETIndexMarketData(): Promise<SETIndex> {
@@ -21,31 +22,31 @@ export class MarketDataScrapper extends MarketData {
       await page.goto(url);
 
       let indexElement = await page.waitForXPath(
-        '//*[@id="index-set-stock-detail-tab-pane-1"]/div/div[1]/div[1]/div[1]/div[2]/div/div/div[2]/div[1]/h2'
+        '//*[@id="index-set-stock-detail-tab-pane-1"]/div/div[1]/div[1]/div[1]/div[2]/div/div/div[2]/div[1]/h2',
       );
 
       let changeElement = await page.waitForXPath(
-        '//*[@id="index-set-stock-detail-tab-pane-1"]/div/div[1]/div[1]/div[1]/div[2]/div/div/div[2]/div[2]/span[1]'
+        '//*[@id="index-set-stock-detail-tab-pane-1"]/div/div[1]/div[1]/div[1]/div[2]/div/div/div[2]/div[2]/span[1]',
       );
 
       let percentChangeElement = await page.waitForXPath(
-        '//*[@id="index-set-stock-detail-tab-pane-1"]/div/div[1]/div[1]/div[1]/div[2]/div/div/div[2]/div[2]/span[2]'
+        '//*[@id="index-set-stock-detail-tab-pane-1"]/div/div[1]/div[1]/div[1]/div[2]/div/div/div[2]/div[2]/span[2]',
       );
 
       let highElement = await page.waitForXPath(
-        '//*[@id="index-set-stock-detail-tab-pane-1"]/div/div[1]/div[1]/div[2]/div[1]/div[1]/span'
+        '//*[@id="index-set-stock-detail-tab-pane-1"]/div/div[1]/div[1]/div[2]/div[1]/div[1]/span',
       );
 
       let lowElement = await page.waitForXPath(
-        '//*[@id="index-set-stock-detail-tab-pane-1"]/div/div[1]/div[1]/div[2]/div[2]/div[1]/span'
+        '//*[@id="index-set-stock-detail-tab-pane-1"]/div/div[1]/div[1]/div[2]/div[2]/div[1]/span',
       );
 
       let volumeElement = await page.waitForXPath(
-        '//*[@id="index-set-stock-detail-tab-pane-1"]/div/div[1]/div[1]/div[2]/div[1]/div[2]/span'
+        '//*[@id="index-set-stock-detail-tab-pane-1"]/div/div[1]/div[1]/div[2]/div[1]/div[2]/span',
       );
 
       let valueElement = await page.waitForXPath(
-        '//*[@id="index-set-stock-detail-tab-pane-1"]/div/div[1]/div[1]/div[2]/div[2]/div[2]/span'
+        '//*[@id="index-set-stock-detail-tab-pane-1"]/div/div[1]/div[1]/div[2]/div[2]/div[2]/span',
       );
 
       let index = await page
@@ -99,7 +100,7 @@ export class MarketDataScrapper extends MarketData {
 
   async getNASDAQIndexMarketData(): Promise<NASDAQIndex> {
     throw new Error(
-      "Method not implemented. Use MarketDataApi to fetch NASDAQ index data."
+      `Method not implemented. Use ${MarketDataApi.name} to fetch NASDAQ index data.`,
     );
   }
 }

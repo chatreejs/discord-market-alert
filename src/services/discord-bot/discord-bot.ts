@@ -13,14 +13,14 @@ import {
 } from "@constants";
 import { AlertType, Market } from "@enums";
 import { NASDAQIndex } from "@interfaces";
-import { MarketData, MarketDataApi, MarketDataScrapper } from "@services";
+import { MarketData, MarketDataApi, MarketDataScraper } from "@services";
 import { currencyFormat, toBuddhistYear } from "@utils";
 
 export class DiscordBot {
   private readonly name: string;
   private readonly webhookId: string[];
   private readonly webhookToken: string[];
-  private readonly marketDataScrapper: MarketData;
+  private readonly marketDataScraper: MarketData;
   private readonly marketDataApi: MarketDataApi;
   private readonly logger: Logger;
 
@@ -28,12 +28,12 @@ export class DiscordBot {
     name: string,
     webhookId: string[],
     webhookToken: string[],
-    configuration: Configuration
+    configuration: Configuration,
   ) {
     this.name = name;
     this.webhookId = webhookId;
     this.webhookToken = webhookToken;
-    this.marketDataScrapper = new MarketDataScrapper(configuration);
+    this.marketDataScraper = new MarketDataScraper(configuration);
     this.marketDataApi = new MarketDataApi(configuration);
     this.logger = getLogger("[DiscordBot]");
     this.logger.level = configuration.logLevel;
@@ -46,14 +46,14 @@ export class DiscordBot {
         if (alertType === AlertType.MARKET_OPEN) {
           embeds.push(
             await this.generateSETIndexEmbed(
-              "รายงานสถานการณ์ตลาดหลักทรัพย์แห่งประเทศไทย"
-            )
+              "รายงานสถานการณ์ตลาดหลักทรัพย์แห่งประเทศไทย",
+            ),
           );
         } else if (alertType === AlertType.MARKET_BRIEFING) {
           embeds.push(
             await this.generateSETIndexEmbed(
-              "สรุปภาวะตลาดหลักทรัพย์แห่งประเทศไทย"
-            )
+              "สรุปภาวะตลาดหลักทรัพย์แห่งประเทศไทย",
+            ),
           );
           // embeds.push(await this.generateSETMostActiveVolumeEmbed());
         }
@@ -62,14 +62,14 @@ export class DiscordBot {
         if (alertType === AlertType.MARKET_OPEN) {
           embeds.push(
             await this.generateNASDAQIndexEmbed(
-              "รายงานสถานการณ์ NASDAQ Composite Index"
-            )
+              "รายงานสถานการณ์ NASDAQ Composite Index",
+            ),
           );
         } else if (alertType === AlertType.MARKET_BRIEFING) {
           embeds.push(
             await this.generateNASDAQIndexEmbed(
-              "สรุปภาพรวม NASDAQ Composite Index"
-            )
+              "สรุปภาพรวม NASDAQ Composite Index",
+            ),
           );
         }
         break;
@@ -100,7 +100,7 @@ export class DiscordBot {
 
   async generateSETIndexEmbed(title: string): Promise<APIEmbed> {
     this.logger.debug("Retrieving SET Index data");
-    const data = await this.marketDataScrapper.getSETIndexMarketData();
+    const data = await this.marketDataApi.getSETIndexMarketData();
     const date = new Date();
     const dateString = toBuddhistYear(moment(date).locale("th"), "LLLL");
     this.logger.debug("Generating SET Index embed...");
