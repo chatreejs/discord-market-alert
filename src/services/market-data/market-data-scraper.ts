@@ -21,57 +21,57 @@ export class MarketDataScraper extends MarketData {
       this.logger.debug(`Scraping SET data from ${url}`);
       await page.goto(url);
 
-      let indexElement = await page.waitForXPath(
+      const indexElement = await page.waitForXPath(
         '//*[@id="index-set-stock-detail-tab-pane-1"]/div/div[1]/div[1]/div[1]/div[2]/div/div/div[2]/div[1]/h2',
       );
 
-      let changeElement = await page.waitForXPath(
+      const changeElement = await page.waitForXPath(
         '//*[@id="index-set-stock-detail-tab-pane-1"]/div/div[1]/div[1]/div[1]/div[2]/div/div/div[2]/div[2]/span[1]',
       );
 
-      let percentChangeElement = await page.waitForXPath(
+      const percentChangeElement = await page.waitForXPath(
         '//*[@id="index-set-stock-detail-tab-pane-1"]/div/div[1]/div[1]/div[1]/div[2]/div/div/div[2]/div[2]/span[2]',
       );
 
-      let highElement = await page.waitForXPath(
+      const highElement = await page.waitForXPath(
         '//*[@id="index-set-stock-detail-tab-pane-1"]/div/div[1]/div[1]/div[2]/div[1]/div[1]/span',
       );
 
-      let lowElement = await page.waitForXPath(
+      const lowElement = await page.waitForXPath(
         '//*[@id="index-set-stock-detail-tab-pane-1"]/div/div[1]/div[1]/div[2]/div[2]/div[1]/span',
       );
 
-      let volumeElement = await page.waitForXPath(
+      const volumeElement = await page.waitForXPath(
         '//*[@id="index-set-stock-detail-tab-pane-1"]/div/div[1]/div[1]/div[2]/div[1]/div[2]/span',
       );
 
-      let valueElement = await page.waitForXPath(
+      const valueElement = await page.waitForXPath(
         '//*[@id="index-set-stock-detail-tab-pane-1"]/div/div[1]/div[1]/div[2]/div[2]/div[2]/span',
       );
 
-      let index = await page
+      const index = await page
         .evaluate((element) => element.textContent, indexElement)
         .then((text) => +text.trim().replace(/,/g, ""));
-      let change = await page
+      const change = await page
         .evaluate((element) => element.textContent, changeElement)
         .then((text) => +text.trim().replace(/,/g, ""));
-      let percentChange = await page
+      const percentChange = await page
         .evaluate((element) => element.textContent, percentChangeElement)
         .then((text) => +text.trim().replace(/[+%()]/g, ""));
-      let high = await page
+      const high = await page
         .evaluate((element) => element.textContent, highElement)
         .then((text) => +text.trim().replace(/,/g, ""));
-      let low = await page
+      const low = await page
         .evaluate((element) => element.textContent, lowElement)
         .then((text) => +text.trim().replace(/,/g, ""));
-      let value = await page
+      const value = await page
         .evaluate((element) => element.textContent, valueElement)
         .then((text) => +text.trim().replace(/,/g, ""));
-      let volume = await page
+      const volume = await page
         .evaluate((element) => element.textContent, volumeElement)
         .then((text) => +text.trim().replace(/,/g, ""));
 
-      let data: SETIndex = {
+      const data: SETIndex = {
         index: index,
         change: change,
         percentChange: percentChange,

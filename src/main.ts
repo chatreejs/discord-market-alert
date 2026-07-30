@@ -1,5 +1,5 @@
-import moduleAlias from "module-alias";
-moduleAlias.addAliases({
+import { addAliases } from "module-alias";
+addAliases({
   "@configs": `${__dirname}/configs`,
   "@constants": `${__dirname}/constants`,
   "@enums": `${__dirname}/enums`,
@@ -71,8 +71,8 @@ try {
   scheduler.start();
   logger.info(LOG_BAR);
   logger.info("All tasks started. Waiting for trigger.");
-} catch (error: any) {
-  logger.error(error.message);
+} catch (error) {
+  logger.error(error instanceof Error ? error.message : String(error));
   shutdown(() => {
     process.exit(1);
   });

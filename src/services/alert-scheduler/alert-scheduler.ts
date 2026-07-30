@@ -132,8 +132,10 @@ export class AlertScheduler {
           () => {
             this.logger.info("Sending message complete");
           },
-          (error: any) => {
-            this.logger.error(error.message);
+          (error: unknown) => {
+            this.logger.error(
+              error instanceof Error ? error.message : String(error)
+            );
           }
         );
       }

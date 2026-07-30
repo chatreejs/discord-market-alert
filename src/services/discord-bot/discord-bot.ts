@@ -13,15 +13,14 @@ import {
 } from "@constants";
 import { AlertType, Market } from "@enums";
 import { NASDAQIndex } from "@interfaces";
-import { MarketData, MarketDataApi, MarketDataScraper } from "@services";
+import { MarketData, MarketDataApi } from "@services";
 import { currencyFormat, toBuddhistYear } from "@utils";
 
 export class DiscordBot {
   private readonly name: string;
   private readonly webhookId: string[];
   private readonly webhookToken: string[];
-  private readonly marketDataScraper: MarketData;
-  private readonly marketDataApi: MarketDataApi;
+  private readonly marketDataApi: MarketData;
   private readonly logger: Logger;
 
   constructor(
@@ -33,14 +32,13 @@ export class DiscordBot {
     this.name = name;
     this.webhookId = webhookId;
     this.webhookToken = webhookToken;
-    this.marketDataScraper = new MarketDataScraper(configuration);
     this.marketDataApi = new MarketDataApi(configuration);
     this.logger = getLogger("[DiscordBot]");
     this.logger.level = configuration.logLevel;
   }
 
   async sendMessage(market: string, alertType: string): Promise<void> {
-    let embeds: APIEmbed[] = [];
+    const embeds: APIEmbed[] = [];
     switch (market) {
       case Market.SET:
         if (alertType === AlertType.MARKET_OPEN) {
@@ -85,7 +83,7 @@ export class DiscordBot {
     this.logger.info(`Sending message to Discord`);
     this.logger.debug(`embeds: ${JSON.stringify(embeds)}`);
     this.webhookId.forEach((id, index) => {
-      let webhookClient = new WebhookClient({
+      const webhookClient = new WebhookClient({
         id: id,
         token: this.webhookToken[index],
       });
