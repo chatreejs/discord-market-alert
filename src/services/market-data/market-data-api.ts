@@ -1,15 +1,15 @@
 import axios from "axios";
-import puppeteer, { Browser } from "puppeteer";
+import puppeteer, { type Browser } from "puppeteer";
 
-import { Configuration } from "@configs";
-import {
+import type { Configuration } from "#configs";
+import type {
   NASDAQIndex,
   NASDAQIndexResponse,
   SETIndex,
   SETIndexInfo,
   SETIndexListResponse,
-} from "@interfaces";
-import { MarketData } from "./market-data";
+} from "#interfaces";
+import { MarketData } from "./market-data.ts";
 
 const USER_AGENT =
   "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36";
@@ -20,7 +20,7 @@ const NASDAQ_INDEX_API_URL =
   "https://api.nasdaq.com/api/quote/COMP/info?assetclass=index";
 
 export class MarketDataApi extends MarketData {
-  constructor(protected readonly configuration: Configuration) {
+  constructor(configuration: Configuration) {
     super(configuration, "[MarketDataApi]");
   }
 

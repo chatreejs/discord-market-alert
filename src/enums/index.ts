@@ -1,2 +1,2 @@
-export * from "./market.enums";
-export * from "./alert-type.enums";
+export * from "./market.enums.ts";
+export * from "./alert-type.enums.ts";

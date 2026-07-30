@@ -1,8 +1,9 @@
-import { APIEmbed, EmbedBuilder, WebhookClient } from "discord.js";
-import { Logger, getLogger } from "log4js";
+import { type APIEmbed, EmbedBuilder, WebhookClient } from "discord.js";
+import log4js, { type Logger } from "log4js";
+const { getLogger } = log4js;
 import moment from "moment-timezone";
 
-import { Configuration } from "@configs";
+import type { Configuration } from "#configs";
 import {
   NASDAQ_BANNER_URL,
   NASDAQ_ICON_URL,
@@ -10,11 +11,11 @@ import {
   SET_BANNER_URL,
   SET_ICON_URL,
   SET_WEBSITE_URL,
-} from "@constants";
-import { AlertType, Market } from "@enums";
-import { NASDAQIndex } from "@interfaces";
-import { MarketData, MarketDataApi } from "@services";
-import { currencyFormat, toBuddhistYear } from "@utils";
+} from "#constants";
+import { AlertType, Market } from "#enums";
+import type { NASDAQIndex } from "#interfaces";
+import { MarketData, MarketDataApi } from "#services";
+import { currencyFormat, toBuddhistYear } from "#utils";
 
 export class DiscordBot {
   private readonly name: string;

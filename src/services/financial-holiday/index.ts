@@ -1,1 +1,1 @@
-export * from "./financial-holiday";
+export * from "./financial-holiday.ts";

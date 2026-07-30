@@ -1,16 +1,19 @@
-import { Logger, getLogger } from "log4js";
+import log4js, { type Logger } from "log4js";
+const { getLogger } = log4js;
 import moment from "moment-timezone";
 
-import { Configuration } from "@configs";
-import { Market } from "@enums";
-import { FinancialHoliday } from "@services";
+import type { Configuration } from "#configs";
+import { Market } from "#enums";
+import { FinancialHoliday } from "#services";
 
 export class TradingDayValidator {
+  private readonly configuration: Configuration;
   private readonly logger: Logger;
 
   private readonly financialHoliday: FinancialHoliday;
 
-  constructor(private readonly configuration: Configuration) {
+  constructor(configuration: Configuration) {
+    this.configuration = configuration;
     this.logger = getLogger("[TradingDayValidator]");
     this.logger.level = configuration.logLevel;
 

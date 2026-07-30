@@ -1,1 +1,1 @@
-export * from "./alert-scheduler";
+export * from "./alert-scheduler.ts";

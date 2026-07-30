@@ -1,15 +1,15 @@
-import { getLogger, Logger } from "log4js";
+import log4js, { type Logger } from "log4js";
+const { getLogger } = log4js;
 
-import { Configuration } from "@configs";
-import { NASDAQIndex, SETIndex } from "@interfaces";
+import type { Configuration } from "#configs";
+import type { NASDAQIndex, SETIndex } from "#interfaces";
 
 export abstract class MarketData {
   protected readonly logger: Logger;
+  protected readonly configuration: Configuration;
 
-  constructor(
-    protected readonly configuration: Configuration,
-    logName: string = "[MarketData]"
-  ) {
+  constructor(configuration: Configuration, logName: string = "[MarketData]") {
+    this.configuration = configuration;
     this.logger = getLogger(logName);
     this.logger.level = configuration.logLevel;
   }

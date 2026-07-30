@@ -1,18 +1,21 @@
 import { CronJob } from "cron";
-import { getLogger, Logger } from "log4js";
+import log4js, { type Logger } from "log4js";
+const { getLogger } = log4js;
 
-import { Configuration } from "@configs";
-import { AlertType, Market } from "@enums";
-import { DiscordBot, TradingDayValidator } from "@services";
+import type { Configuration } from "#configs";
+import { AlertType, Market } from "#enums";
+import { DiscordBot, TradingDayValidator } from "#services";
 
 export class AlertScheduler {
+  private readonly configuration: Configuration;
   private readonly enabledMarket: string[];
   private readonly logger: Logger;
 
   private readonly discordBot: DiscordBot;
   private readonly tradingDayValidator: TradingDayValidator;
 
-  constructor(private readonly configuration: Configuration) {
+  constructor(configuration: Configuration) {
+    this.configuration = configuration;
     this.enabledMarket = configuration.enableMarket;
     this.logger = getLogger("[AlertScheduler]");
     this.logger.level = configuration.logLevel;

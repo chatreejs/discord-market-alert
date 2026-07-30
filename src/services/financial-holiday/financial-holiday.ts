@@ -1,13 +1,16 @@
 import axios from "axios";
-import { getLogger, Logger } from "log4js";
-import moment from "moment";
+import log4js, { type Logger } from "log4js";
+const { getLogger } = log4js;
+import moment from "moment-timezone";
 
-import { Configuration } from "@configs";
+import type { Configuration } from "#configs";
 
 export class FinancialHoliday {
+  private readonly configuration: Configuration;
   private readonly logger: Logger;
 
-  constructor(private readonly configuration: Configuration) {
+  constructor(configuration: Configuration) {
+    this.configuration = configuration;
     this.logger = getLogger("[FinancialHoliday]");
     this.logger.level = configuration.logLevel;
   }

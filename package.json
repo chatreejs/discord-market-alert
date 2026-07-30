@@ -2,6 +2,7 @@
   "name": "discord-market-alert",
   "version": "1.8.0",
   "description": "Stock Market Alert using Discord Webhooks",
+  "type": "module",
   "repository": {
     "type": "git",
     "url": "https://github.com/chatreejs/discord-market-alert.git"
@@ -17,25 +18,34 @@
       "email": "chanon.t@chatreejs.com"
     }
   ],
+  "imports": {
+    "#configs": "./src/configs/index.ts",
+    "#constants": "./src/constants/index.ts",
+    "#enums": "./src/enums/index.ts",
+    "#interfaces": "./src/interfaces/index.ts",
+    "#services": "./src/services/index.ts",
+    "#utils": "./src/utils/index.ts"
+  },
   "scripts": {
-    "prebuild": "node -p \"'export const APP_VERSION = ' + JSON.stringify(require('./package.json').version) + ';'\" > src/version.ts",
-    "build": "rm -rf dist && tsc",
-    "start": "npm run build && env-cmd -f .env.develop node dist/main.js"
+    "gen:version": "node --input-type=commonjs -p \"'export const APP_VERSION = ' + JSON.stringify(require('./package.json').version) + ';'\" > src/version.ts",
+    "typecheck": "tsc",
+    "build": "yarn gen:version && tsc",
+    "prestart": "yarn gen:version",
+    "start": "env-cmd -f .env.develop node src/main.ts",
+    "dev": "env-cmd -f .env.develop node --watch src/main.ts"
   },
   "dependencies": {
     "axios": "^1.4.0",
     "cron": "^3.1.7",
     "discord.js": "^14.13.0",
     "log4js": "^6.9.1",
-    "module-alias": "^2.2.3",
     "moment-timezone": "^0.5.43",
     "puppeteer": "^19.4.1"
   },
   "devDependencies": {
     "@types/config": "^3.3.5",
-    "@types/node": "^18.11.14",
+    "@types/node": "^24.0.0",
     "env-cmd": "^10.1.0",
-    "ts-node": "^10.9.1",
-    "typescript": "^5.1.0"
+    "typescript": "^5.8.0"
   }
 }

@@ -1,2 +1,2 @@
-export * from "./nasdaq-index";
-export * from "./set-index";
+export * from "./nasdaq-index.ts";
+export * from "./set-index.ts";

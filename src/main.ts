@@ -1,19 +1,10 @@
-import { addAliases } from "module-alias";
-addAliases({
-  "@configs": `${__dirname}/configs`,
-  "@constants": `${__dirname}/constants`,
-  "@enums": `${__dirname}/enums`,
-  "@interfaces": `${__dirname}/interfaces`,
-  "@services": `${__dirname}/services`,
-  "@utils": `${__dirname}/utils`,
-});
+import log4js from "log4js";
+const { configure, getLogger, shutdown } = log4js;
 
-import { configure, getLogger, shutdown } from "log4js";
-
-import { Configuration, loadConfiguration } from "@configs";
-import { LOG_BAR } from "@constants";
-import { AlertScheduler } from "@services";
-import { APP_VERSION } from "./version";
+import { type Configuration, loadConfiguration } from "#configs";
+import { LOG_BAR } from "#constants";
+import { AlertScheduler } from "#services";
+import { APP_VERSION } from "./version.ts";
 
 process.on("SIGINT", function () {
   logger.info("Caught interrupt signal");

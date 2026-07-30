@@ -1,4 +1,4 @@
-import { Market } from "@enums";
+import { Market } from "#enums";
 
 interface CrontabConfig {
   open: string;

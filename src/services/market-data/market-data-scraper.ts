@@ -1,12 +1,12 @@
 import puppeteer from "puppeteer";
 
-import { Configuration } from "@configs";
-import { NASDAQIndex, SETIndex } from "@interfaces";
-import { MarketData } from "./market-data";
-import { MarketDataApi } from "./market-data-api";
+import type { Configuration } from "#configs";
+import type { NASDAQIndex, SETIndex } from "#interfaces";
+import { MarketData } from "./market-data.ts";
+import { MarketDataApi } from "./market-data-api.ts";
 
 export class MarketDataScraper extends MarketData {
-  constructor(protected readonly configuration: Configuration) {
+  constructor(configuration: Configuration) {
     super(configuration, "[MarketDataScraper]");
   }
 
