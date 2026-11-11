@@ -1,0 +1,132 @@
+/* Stylesheet for ci/trivy/html.tpl. Kept as a separate file because Jenkins' CSP blocks inline styles. */
+
+:root {
+  color-scheme: light dark;
+  --bg: #f6f7f9;
+  --surface: #ffffff;
+  --text: #1c2128;
+  --muted: #5f6b7a;
+  --border: #dde1e6;
+  --link: #0b63c5;
+  --head-bg: #eef1f4;
+  --critical: #b42318;
+  --critical-bg: #fde8e7;
+  --high: #c4320a;
+  --high-bg: #feeee5;
+  --medium: #946200;
+  --medium-bg: #fdf4d9;
+  --low: #2a6a3f;
+  --low-bg: #e4f4e9;
+  --unknown: #4a5568;
+  --unknown-bg: #edf0f3;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #0f1216;
+    --surface: #171b21;
+    --text: #e6e9ed;
+    --muted: #97a1ad;
+    --border: #2b323b;
+    --link: #6aa9f5;
+    --head-bg: #1e242b;
+    --critical: #ff8a80;
+    --critical-bg: #3b1716;
+    --high: #ffab7a;
+    --high-bg: #3a2014;
+    --medium: #f1c75b;
+    --medium-bg: #352a10;
+    --low: #7fd39a;
+    --low-bg: #16301f;
+    --unknown: #b4bdc8;
+    --unknown-bg: #262c34;
+  }
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  padding: 24px;
+  background: var(--bg);
+  color: var(--text);
+  font: 14px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+a { color: var(--link); text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+.page-header { margin-bottom: 24px; }
+.eyebrow { margin: 0; color: var(--muted); font-size: 12px; text-transform: uppercase; letter-spacing: .08em; }
+h1 { margin: 4px 0; font-size: 22px; word-break: break-all; }
+.meta { margin: 0 0 16px; color: var(--muted); }
+
+.summary { display: flex; flex-wrap: wrap; gap: 12px; margin: 0; padding: 0; list-style: none; }
+.tile {
+  min-width: 120px;
+  padding: 12px 16px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-left: 4px solid var(--unknown);
+  border-radius: 8px;
+}
+.tile .count { display: block; font-size: 24px; font-weight: 700; }
+.tile .label { color: var(--muted); font-size: 12px; }
+.tile.sev-CRITICAL { border-left-color: var(--critical); }
+.tile.sev-HIGH { border-left-color: var(--high); }
+.tile.sev-MEDIUM { border-left-color: var(--medium); }
+.tile.sev-LOW { border-left-color: var(--low); }
+
+.target {
+  margin-bottom: 24px;
+  padding: 16px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+}
+h2 { margin: 0 0 12px; font-size: 16px; }
+h3 { margin: 20px 0 8px; font-size: 14px; }
+.badge {
+  margin-left: 6px;
+  padding: 2px 8px;
+  background: var(--head-bg);
+  border-radius: 999px;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 500;
+}
+.empty { margin: 0; color: var(--muted); }
+
+.table-wrap { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; }
+th, td { padding: 8px 10px; border-bottom: 1px solid var(--border); text-align: left; vertical-align: top; }
+th { background: var(--head-bg); color: var(--muted); font-size: 12px; font-weight: 600; white-space: nowrap; }
+tbody tr:hover { background: var(--head-bg); }
+
+.pkg strong { display: block; }
+.path { display: block; color: var(--muted); font-size: 12px; word-break: break-all; }
+.id, .mono { white-space: nowrap; }
+.mono { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 13px; }
+.fixed { color: var(--low); }
+.muted { color: var(--muted); }
+.title { min-width: 280px; }
+
+.pill {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: .03em;
+  color: var(--unknown);
+  background: var(--unknown-bg);
+}
+.pill.sev-CRITICAL { color: var(--critical); background: var(--critical-bg); }
+.pill.sev-HIGH { color: var(--high); background: var(--high-bg); }
+.pill.sev-MEDIUM { color: var(--medium); background: var(--medium-bg); }
+.pill.sev-LOW { color: var(--low); background: var(--low-bg); }
+
+details { margin-top: 4px; }
+summary { color: var(--muted); font-size: 12px; cursor: pointer; }
+.refs { margin: 6px 0 0; padding-left: 18px; font-size: 12px; }
+.refs a { word-break: break-all; }
