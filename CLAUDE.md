@@ -54,4 +54,13 @@ main.ts → AlertScheduler → DiscordBot → MarketData (Api | Scraper)
 
 ## Deployment
 
-`Dockerfile` runs on `node:24-alpine` with Chromium installed for Puppeteer (`PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser`). There is no build stage — the image installs production deps, generates `src/version.ts`, and runs `node src/main.ts` directly (native TypeScript). CI is Jenkins — a single branch-aware `ci/jenkinsfiles/Jenkinsfile`: SonarQube scan → Docker build → Trivy scan → push to Docker Hub → deploy via GitOps to Kubernetes. The version is read from `package.json` at build time (`readJSON`), so it is never hardcoded. On the `develop` branch the image tag gets a pre-release suffix (`{version}-develop.{yyyyMMdd}.{BUILD_NUMBER}`) and deploys to the `-dev` GitOps manifest; on other branches (main/master) it tags the bare version and deploys to the `-prod` manifest.
+`Dockerfile` runs on `node:24-alpine` with Chromium installed for Puppeteer (`PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser`). There is no build stage — the image installs production deps, generates `src/version.ts`, and runs `node src/main.ts` directly (native TypeScript). The repo uses GitHub flow: `main` is the only long-lived branch, and changes go through pull requests. CI is Jenkins: `ci/Jenkinsfile` runs as a Multibranch Pipeline that builds `main` and each PR.
+
+1. Prepare Env reads the version from `package.json` with grep and sed. A PR build is tagged `{version}-pr{PR number}.{build}`, and a `main` build `{version}-{short commit}`.
+2. Typecheck runs `yarn typecheck` in `node:24.18.1-alpine`.
+3. On `main` only, SonarQube scans. Community Edition can't analyze PRs.
+4. It builds the image and scans it with Trivy. A PR build stops here and reports a status check to the PR.
+5. On `main`, it pushes the image to Docker Hub, triggers the gitops job `chatreejs/gitops/discord-market-alert-manifest-dev` with `IMAGE_TAG`, and posts to Discord that dev has it.
+6. Promote to production waits up to 7 days, without an executor, for someone to click Promote. It then triggers `chatreejs/gitops/discord-market-alert-manifest-prod` with the same tag, so prod runs the image dev ran.
+
+Jenkins posts its Discord messages with the Secret text credential `discord-webhook-url`, the full webhook URL. That is separate from the bot's own `DISCORD_WEBHOOK_ID` and `DISCORD_WEBHOOK_TOKEN`.
