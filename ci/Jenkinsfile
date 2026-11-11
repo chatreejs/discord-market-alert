@@ -104,14 +104,19 @@ pipeline {
             }
           }
           steps {
-            sh 'trivy image --format template --template \"@/contrib/html.tpl\" --output report.html --severity HIGH,CRITICAL --no-progress ${IMAGE_URL}:${BUILD_VERSION}'
+            // Jenkins' CSP blocks inline CSS, so the template links report.css, copied next to the report
+            sh '''
+              rm -rf trivy-report && mkdir -p trivy-report
+              cp ci/trivy/report.css trivy-report/
+              trivy image --format template --template "@ci/trivy/html.tpl" --output trivy-report/index.html --severity HIGH,CRITICAL --no-progress ${IMAGE_URL}:${BUILD_VERSION}
+            '''
 
             publishHTML target : [
               allowMissing: true,
               alwaysLinkToLastBuild: false,
               keepAll: true,
-              reportDir: '.',
-              reportFiles: 'report.html',
+              reportDir: 'trivy-report',
+              reportFiles: 'index.html',
               reportName: 'Trivy Scan Report',
             ]
           }
